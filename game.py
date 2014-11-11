@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from beaver import Beaver
+from terrain import Terrain
 from tree import Tree
 
 class Game:
@@ -20,9 +21,7 @@ class Game:
 		self.screen.blit(self.background, (0, 0))
 		pygame.display.flip()
 
-		self.treegroup = pygame.sprite.Group()
-		for tree in range(20):
-			self.treegroup.add(Tree())
+		self.terraingroup = Terrain()
 
 		self.beaver = Beaver((0.47, 2))
 		self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
@@ -40,7 +39,7 @@ class Game:
 	def on_render(self):
 		self.screen.blit(self.background, self.beaver.rect, self.beaver.rect)
 		self.beaversprite.draw(self.screen)
-		self.treegroup.draw(self.screen)
+		self.terraingroup.draw(self.screen)
 		pygame.display.flip()
 		self._clock.tick(60)
 

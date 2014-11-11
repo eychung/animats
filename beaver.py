@@ -12,8 +12,10 @@ class Beaver(pygame.sprite.Sprite):
 	def __init__(self, vector):
 		pygame.sprite.Sprite.__init__(self)
 		self.image, self.rect = Resources.load_png('beaver.png')
+		originalsize = self.image.get_size()
+		self.image = pygame.transform.scale(self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
 		screen = pygame.display.get_surface()
-		self.area = screen.get_rect()
+		self.rect = self.image.get_rect()
 		self.vector = vector
 
 	def update(self):
