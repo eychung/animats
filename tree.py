@@ -7,7 +7,8 @@ from resources import Resources
 class Tree(pygame.sprite.Sprite):
 	"""A tree
 	Returns: tree object
-	Functions: update"""
+	Functions: update
+	Attributes: health"""
 
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
@@ -17,6 +18,8 @@ class Tree(pygame.sprite.Sprite):
 		self.image = pygame.transform.scale(self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
 		newsize = self.image.get_size()
 		self.rect = self.image.get_rect()
+
+		self.health = 100
 
 		# Tweak to avoid clipped images by right and bottom borders
 		newposx = random.randint(0, screen.get_width() - newsize[0])

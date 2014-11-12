@@ -7,7 +7,7 @@ class Beaver(pygame.sprite.Sprite):
 	"""A beaver that will move across the screen
 	Returns: beaver object
 	Functions: update, calcnewpos
-	Attributes: area, vector"""
+	Attributes: energy, rect, vector"""
 
 	def __init__(self, vector):
 		pygame.sprite.Sprite.__init__(self)
@@ -16,7 +16,12 @@ class Beaver(pygame.sprite.Sprite):
 		self.image = pygame.transform.scale(self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
 		screen = pygame.display.get_surface()
 		self.rect = self.image.get_rect()
+
+		self.energy = 100
 		self.vector = vector
+
+	def updateenergy(self):
+		pass
 
 	def update(self):
 		newpos = self.calcnewpos(self.rect, self.vector)

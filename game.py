@@ -28,7 +28,7 @@ class Game:
 
 		self._clock = pygame.time.Clock()
 		self._running = True
-
+		
 	def on_event(self, event):
 		if event.type == pygame.QUIT:
 			self._running = False
@@ -37,11 +37,26 @@ class Game:
 		self.beaversprite.update()
 
 	def on_render(self):
-		self.screen.blit(self.background, self.beaver.rect, self.beaver.rect)
-		self.beaversprite.draw(self.screen)
+		self.background.fill((255, 255, 255))
+		self.screen.blit(self.background, (0, 0))
+
 		self.terraingroup.draw(self.screen)
-		pygame.display.flip()
-		self._clock.tick(60)
+		self.beaversprite.draw(self.screen)
+
+		# Draws energy and health bars of beaver and trees
+		bx, by = self.beaver.rect.topleft
+		brect = pygame.Rect(bx, by, self.beaver.rect.width, 5)
+		pygame.draw.rect(self.screen, (0, 255, 0), brect, 0)
+		
+		for sprite in self.terraingroup:
+			if isinstance(sprite, Tree):
+				sx, sy = sprite.rect.topleft
+				srect = pygame.Rect(sx, sy, sprite.rect.width, 5)
+				pygame.draw.rect(self.screen, (0, 255, 0), srect, 0)
+
+		# Inefficient but works without hacking up a blit function for transparent images
+		pygame.display.update()
+		self._clock.tick(10)
 
 	def on_cleanup(self):
 		pygame.quit()
