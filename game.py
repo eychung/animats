@@ -41,23 +41,24 @@ class Game:
     self.background.fill((255, 255, 255))
     self.screen.blit(self.background, (0, 0))
 
+    # Draws beaver, marsh, and tree sprites
     self.terraingroup.draw(self.screen)
     self.beaversprite.draw(self.screen)
 
     # Draws energy and health bars of beaver and trees
     bx, by = self.beaver.rect.topleft
-    brect = pygame.Rect(bx, by, self.beaver.rect.width, 5)
+    brect = pygame.Rect(bx, by, self.beaver.energybar, 5)
     pygame.draw.rect(self.screen, (0, 255, 0), brect, 0)
 
     for sprite in self.terraingroup:
       if isinstance(sprite, Tree):
         sx, sy = sprite.rect.topleft
-        srect = pygame.Rect(sx, sy, sprite.rect.width, 5)
+        srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
         pygame.draw.rect(self.screen, (0, 255, 0), srect, 0)
 
     # Inefficient but works without hacking up a blit function for transparent images
     pygame.display.update()
-    self._clock.tick(10)
+    self._clock.tick(60)
 
   def on_cleanup(self):
     pygame.quit()

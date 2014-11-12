@@ -8,12 +8,11 @@ class Tree(pygame.sprite.Sprite):
   """A tree
   Returns: tree object
   Functions: update
-  Attributes: health"""
+  Attributes: health, healthbar"""
 
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('tree.png')
-    self.health = 100
 
     originalsize = self.image.get_size()
     self.image = pygame.transform.scale(
@@ -27,5 +26,11 @@ class Tree(pygame.sprite.Sprite):
     newposy = random.randint(0, screen.get_height() - newsize[1])
     self.rect.move_ip(newposx, newposy)
 
+    self.health = 100
+    self.healthbar = self.rect.width
+
+  def updatehealth(self):
+    self.health = self.rect.width * (self.health/100)
+
   def update(self):
-    pass
+    self.updatehealth()
