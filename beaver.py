@@ -11,6 +11,8 @@ class Beaver(pygame.sprite.Sprite):
   Attributes: energy, energybar, rect, vector
   """
 
+  CONST_VIEW_DIST = 100
+
   def __init__(self, vector):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('beaver.png')
@@ -28,14 +30,16 @@ class Beaver(pygame.sprite.Sprite):
   Saves trees within eye viewing distance into internal list.
   """
   def seteyeview(self, treelist):
-    x = max(0, self.rect.centerx - 50)
-    y = max(0, self.rect.centery - 50)
-    eyeviewrect = Rect(x, y, 100, 100)
+    x = self.rect.centerx - self.CONST_VIEW_DIST
+    y = self.rect.centery - self.CONST_VIEW_DIST
+    eyeviewrect = Rect(x, y, self.CONST_VIEW_DIST*2, self.CONST_VIEW_DIST*2)
     self.eyeview = []
     for tree in treelist:
       if eyeviewrect.colliderect(tree.rect):
         self.eyeview.append((tree, 
           self.calcrectcenterdistance(self.rect, tree.rect)))
+        print self.rect.center
+        print tree.rect.center
 
   def setscentview(self, animatslist):
     pass
@@ -49,6 +53,7 @@ class Beaver(pygame.sprite.Sprite):
   """
   def calcadjvals(self):
     sortedeyeview = sorted(self.eyeview, key=itemgetter(1))
+    print sortedeyeview
 
   def calcnewpos(self, rect, vector):
     (angle, z) = vector

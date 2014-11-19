@@ -38,7 +38,7 @@ class Game:
       self._running = False
 
   def on_loop(self):
-    self.beaver.seteyeview(self.terraingroup.gettreelist())
+    #self.beaver.seteyeview(self.terraingroup.gettreelist())
     self.beaversprite.update()
 
   def on_render(self):
