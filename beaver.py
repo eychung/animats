@@ -8,10 +8,11 @@ class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
   Returns: beaver object
   Functions: update, calcnewpos
-  Attributes: energy, energybar, rect, vector
+  Attributes: adjlist, energy, energybar, rect, vector
   """
 
   CONST_VIEW_DIST = 100
+  CONST_STEP_SIZE = 1 # pixels
 
   def __init__(self, vector):
     pygame.sprite.Sprite.__init__(self)
@@ -21,10 +22,31 @@ class Beaver(pygame.sprite.Sprite):
       self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
     self.rect = self.image.get_rect()
 
+    # Top left, top, top right, left, right, bottom left, bottom, bottom right
+    self.setadjpoints()
     self.energy = 100
     self.energybar = self.rect.width
     self.eyeview = []
     self.vector = vector
+
+  def setadjpoints(self):
+     self.adjpoints = [
+      (self.rect.centerx - self.CONST_STEP_SIZE, # top left
+      self.rect.centery - self.CONST_STEP_SIZE),
+      (self.rect.centerx, # top
+      self.rect.centery - self.CONST_STEP_SIZE),
+      (self.rect.centerx + self.CONST_STEP_SIZE, # top right
+      self.rect.centery - self.CONST_STEP_SIZE), 
+      (self.rect.centerx - self.CONST_STEP_SIZE, # left
+      self.rect.centery),
+      (self.rect.centerx + self.CONST_STEP_SIZE, # right
+      self.rect.centery),
+      (self.rect.centerx - self.CONST_STEP_SIZE, # bottom left
+      self.rect.centery + self.CONST_STEP_SIZE),
+      (self.rect.centerx, # bottom
+      self.rect.centery + self.CONST_STEP_SIZE),
+      (self.rect.centerx + self.CONST_STEP_SIZE, # bottom right
+      self.rect.centery + self.CONST_STEP_SIZE)]
 
   """The beaver can observe trees within a 100x100 rect.
   Saves trees within eye viewing distance into internal list.
@@ -36,35 +58,53 @@ class Beaver(pygame.sprite.Sprite):
     self.eyeview = []
     for tree in treelist:
       if eyeviewrect.colliderect(tree.rect):
-        self.eyeview.append((tree, 
-          self.calcrectcenterdistance(self.rect, tree.rect)))
-        print self.rect.center
-        print tree.rect.center
+        self.eyeview.append(tree)
 
   def setscentview(self, animatslist):
     pass
 
-  def calcrectcenterdistance(self, r1, r2):
-    return math.hypot(r2.centerx - r1.centerx, r2.centery - r1.centery)
+  def gettreedisttuple(self, treelist, point):
+    treedisttuple = []
+    for tree in treelist:
+      treedisttuple.append((tree,
+        self.calcdistance(point, tree.rect.center)))
+    return treedisttuple
 
-  """Values of the eight adjacent spots the beaver can move to.
-  In the future, we may influence these values based on proximity
-  to home as well or simply have it learn it.
+  def calcdistance(self, p1, p2):
+    return math.hypot(p2[0] - p1[0], p2[1] - p1[1])
+
+  """Return a list of eight values for the beaver's adjacency list.
+  High values are favored. In the future, we may either influence these
+  values based on distance from home or learn it.
+
   """
   def calcadjvals(self):
-    sortedeyeview = sorted(self.eyeview, key=itemgetter(1))
-    print sortedeyeview
+    adjvals = []
+    if self.eyeview:
+      for point in self.adjpoints:
+        treedisttuple = self.gettreedisttuple(self.eyeview, point)
+        # Get the distance to the closest tree
+        # Sorting may be useful for later ops
+        shortestdist = sorted(treedisttuple, key=itemgetter(1))[0][1]
+        normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
+        adjvals.append(1 - normalizeddist)
+    return adjvals
 
-  def calcnewpos(self, rect, vector):
-    (angle, z) = vector
-    (dx, dy) = (z * math.cos(angle), z * math.sin(angle))
-    return rect.move(dx, dy)
+  def calcnewpos(self, rect):
+    self.setadjpoints()
+    adjvals = self.calcadjvals()
+    moveto = self.adjpoints[adjvals.index(max(adjvals))]
+    print str(self.rect.center) + " moving to " + str(moveto)
+    # Note that the move function returns a new rect moved by offset
+    offsetx = moveto[0] - self.rect.centerx
+    offsety = moveto[1] - self.rect.centery
+    return rect.move(offsetx, offsety)
 
   def updateenergy(self):
+    self.energy -= .05
     self.energybar = self.rect.width * (self.energy/100)
 
   def update(self):
-    self.energy -= .05
     self.updateenergy()
-    newpos = self.calcnewpos(self.rect, self.vector)
+    newpos = self.calcnewpos(self.rect)
     self.rect = newpos

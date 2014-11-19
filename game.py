@@ -27,9 +27,6 @@ class Game:
     self.beaver = Beaver((0.47, 1))
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
 
-    self.beaver.seteyeview(self.terraingroup.gettreelist())
-    self.beaver.calcadjvals()
-
     self._clock = pygame.time.Clock()
     self._running = True
 
@@ -38,7 +35,7 @@ class Game:
       self._running = False
 
   def on_loop(self):
-    #self.beaver.seteyeview(self.terraingroup.gettreelist())
+    self.beaver.seteyeview(self.terraingroup.gettreelist())
     self.beaversprite.update()
 
   def on_render(self):
