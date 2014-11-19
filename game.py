@@ -22,7 +22,7 @@ class Game:
     self.screen.blit(self.background, (0, 0))
     pygame.display.flip()
 
-    self.terraingroup = Terrain()
+    self.terrain = Terrain()
 
     self.beaver = Beaver((0.47, 1))
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
@@ -35,15 +35,30 @@ class Game:
       self._running = False
 
   def on_loop(self):
-    self.beaver.seteyeview(self.terraingroup.gettreelist())
+    self.beaver.seteyeview(self.terrain.gettreelist())
     self.beaversprite.update()
+
+    tree = pygame.sprite.spritecollideany(self.beaver,
+      self.terrain.terraingroup)
+    if tree is not None:
+      # Check beaver state
+      if self.beaver.state == Beaver.CONST_STATE_EAT:
+        tree.setstate(Tree.CONST_STATE_ATE)
+        tree.update()
+      elif self.beaver.state == Beaver.CONST_STATE_FORAGE:
+        tree.setstate(Tree.CONST_STATE_FORAGED)
+        tree.update()
+
+      # Check tree state
+      if tree.health <= 0:
+        tree.kill()
 
   def on_render(self):
     self.background.fill((255, 255, 255))
     self.screen.blit(self.background, (0, 0))
 
     # Draws beaver, marsh, and tree sprites
-    self.terraingroup.draw(self.screen)
+    self.terrain.terraingroup.draw(self.screen)
     self.beaversprite.draw(self.screen)
 
     # Draws energy and health bars of beaver and trees
@@ -51,7 +66,7 @@ class Game:
     brect = pygame.Rect(bx, by, self.beaver.energybar, 5)
     pygame.draw.rect(self.screen, (0, 255, 0), brect, 0)
 
-    for sprite in self.terraingroup:
+    for sprite in self.terrain.terraingroup:
       if isinstance(sprite, Tree):
         sx, sy = sprite.rect.topleft
         srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
@@ -78,3 +93,4 @@ class Game:
 if __name__ == "__main__":
   game = Game()
   game.on_execute()
+

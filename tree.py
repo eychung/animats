@@ -8,8 +8,12 @@ class Tree(pygame.sprite.Sprite):
   """A tree
   Returns: tree object
   Functions: update
-  Attributes: health, healthbar
+  Attributes: health, healthbar, state
   """
+
+  CONST_STATE_IDLE = 0
+  CONST_STATE_ATE = 1
+  CONST_STATE_FORAGED = 2
 
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
@@ -29,9 +33,18 @@ class Tree(pygame.sprite.Sprite):
 
     self.health = 100
     self.healthbar = self.rect.width
+    self.state = self.CONST_STATE_IDLE
+
+  def setstate(self, state):
+    self.state = state
 
   def updatehealth(self):
-    self.health = self.rect.width * (self.health/100)
+    if self.state == self.CONST_STATE_ATE:
+      self.health -= 10
+    elif self.state == self.CONST_STATE_FORAGED:
+      self.health -= 50
+    self.healthbar = self.rect.width * min(1, (self.health/100))
 
   def update(self):
     self.updatehealth()
+

@@ -5,23 +5,24 @@ from tree import Tree
 
 initnumtrees = 50
 
-class Terrain(pygame.sprite.Group):
+class Terrain:
   def __init__(self):
-    pygame.sprite.Group.__init__(self)
     screen = pygame.display.get_surface()
+    self.terraingroup = pygame.sprite.Group()
 
     # Add lake
-    self.add_internal(Marsh())
+    self.terraingroup.add(Marsh())
 
     # Add initnumtrees or less trees
     for num in range(initnumtrees):
       tree = Tree()
-      while pygame.sprite.spritecollideany(tree, self) is None:
-        self.add_internal(tree)
+      while pygame.sprite.spritecollideany(tree, self.terraingroup) is None:
+        self.terraingroup.add(tree)
 
   def gettreelist(self):
     treelist = []
-    for sprite in self.sprites():
+    for sprite in self.terraingroup.sprites():
       if isinstance(sprite, Tree):
         treelist.append(sprite)
     return treelist
+
