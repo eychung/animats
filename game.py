@@ -5,6 +5,9 @@ from marsh import Marsh
 from terrain import Terrain
 from tree import Tree
 
+BG_COLOR = (0, 92, 9)
+HEALTHBAR_COLOR = (0, 255, 0)
+
 class Game:
   def __init__(self):
     self._running = True
@@ -19,7 +22,7 @@ class Game:
     # Fill background and blits everything to the screen
     self.background = pygame.Surface(self.size)
     self.background = self.background.convert()
-    self.background.fill((255, 255, 255))
+    self.background.fill(BG_COLOR)
     self.screen.blit(self.background, (0, 0))
     pygame.display.flip()
 
@@ -56,7 +59,7 @@ class Game:
         self.beaver.setstate(Beaver.CONST_STATE_WALK)
 
   def on_render(self):
-    self.background.fill((255, 255, 255))
+    self.background.fill(BG_COLOR)
     self.screen.blit(self.background, (0, 0))
 
     # Draws beaver, marsh, and tree sprites
@@ -66,13 +69,13 @@ class Game:
     # Draws energy and health bars of beaver and trees
     bx, by = self.beaver.rect.topleft
     brect = pygame.Rect(bx, by, self.beaver.energybar, 5)
-    pygame.draw.rect(self.screen, (0, 255, 0), brect, 0)
+    pygame.draw.rect(self.screen, HEALTHBAR_COLOR, brect, 0)
 
     for sprite in self.terrain.terraingroup:
       if isinstance(sprite, Tree):
         sx, sy = sprite.rect.topleft
         srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
-        pygame.draw.rect(self.screen, (0, 255, 0), srect, 0)
+        pygame.draw.rect(self.screen, HEALTHBAR_COLOR, srect, 0)
 
     # Inefficient but works without hacking up a blit function for transparent images
     pygame.display.update()
