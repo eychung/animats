@@ -8,6 +8,7 @@ class Marsh(pygame.sprite.Sprite):
   """A marsh
   Returns: marsh object
   Functions: update
+  Attributes: health, healthbar, scale
   """
 
   def __init__(self):
@@ -17,14 +18,16 @@ class Marsh(pygame.sprite.Sprite):
     # Scales and centers marsh
     originalsize = self.image.get_size()
     self.image = pygame.transform.scale(
-      self.image, (int(originalsize[0] / 2), int(originalsize[1] / 2)))
+      self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
     newsize = self.image.get_size()
     screen = pygame.display.get_surface()
-    centerx = screen.get_width() / 2 - newsize[0] / 2
-    centery = screen.get_height() / 2 - newsize[1] / 2
+    centerx = screen.get_width()/2 - newsize[0]/2
+    centery = screen.get_height()/2 - newsize[1]/2
     self.rect = self.image.get_rect()
     self.rect.move_ip(centerx, centery)
 
+    self.health = 0
+    self.healthbar = 0
     self.scale = 1
 
   def update(self):

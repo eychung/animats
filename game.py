@@ -43,7 +43,7 @@ class Game:
     self.beaversprite.update()
 
     tree = pygame.sprite.spritecollideany(self.beaver,
-      self.terrain.terraingroup)
+      self.terrain.gettreelist())
     if tree is not None and not isinstance(tree, Marsh):
       # Check beaver state
       if self.beaver.state == Beaver.CONST_STATE_EAT:
@@ -72,12 +72,11 @@ class Game:
     pygame.draw.rect(self.screen, HEALTHBAR_COLOR, brect, 0)
 
     for sprite in self.terrain.terraingroup:
-      if isinstance(sprite, Tree):
-        sx, sy = sprite.rect.topleft
-        srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
-        pygame.draw.rect(self.screen, HEALTHBAR_COLOR, srect, 0)
+      sx, sy = sprite.rect.topleft
+      srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
+      pygame.draw.rect(self.screen, HEALTHBAR_COLOR, srect, 0)
 
-    # Inefficient but works without hacking up a blit function for transparent images
+    # Inefficient but works w/o hacking up a blit function for transparent imgs
     pygame.display.update()
     self._clock.tick(60)
 

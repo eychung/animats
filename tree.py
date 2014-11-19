@@ -40,10 +40,10 @@ class Tree(pygame.sprite.Sprite):
 
   def updatehealth(self):
     if self.state == self.CONST_STATE_ATE:
-      self.health -= 10
+      self.health -= 1
     elif self.state == self.CONST_STATE_FORAGED:
       self.health -= 50
-    self.healthbar = self.rect.width * min(1, (self.health/100))
+    self.healthbar = self.rect.width * min(1, (self.health/100.0))
 
   def update(self):
     self.updatehealth()

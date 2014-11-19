@@ -25,7 +25,14 @@ class Beaver(pygame.sprite.Sprite):
     originalsize = self.image.get_size()
     self.image = pygame.transform.scale(
       self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
+    newsize = self.image.get_size()
     self.rect = self.image.get_rect()
+
+    # Centers the beaver to spawn in the center of the marshes
+    screen = pygame.display.get_surface()
+    centerx = screen.get_width()/2 - newsize[0]/2
+    centery = screen.get_height()/2 - newsize[1]/2
+    self.rect.move_ip(centerx, centery)
 
     # Top left, top, top right, left, right, bottom left, bottom, bottom right
     self.setadjpoints()
@@ -55,6 +62,7 @@ class Beaver(pygame.sprite.Sprite):
       self.rect.centery + self.CONST_STEP_SIZE)]
 
   def setstate(self, state):
+      #print "beaver state is changed to " + str(state)
       self.state = state
 
   """The beaver can observe trees within a 100x100 rect.
@@ -124,12 +132,12 @@ class Beaver(pygame.sprite.Sprite):
       self.energy += .1
     elif self.state == self.CONST_STATE_FORAGE:
       self.energy -= .1
-    self.energybar = self.rect.width * min(1, (self.energy/100))
+    self.energybar = self.rect.width * min(1, (self.energy/100.0))
 
   def update(self):
     # First check if need to change states
     if self.rect.collidelist(self.eyeview) >= 0:
-      self.state = self.CONST_STATE_EAT
+      self.setstate(self.CONST_STATE_EAT)
 
     self.updateenergy()
     newpos = self.calcnewpos(self.rect)
