@@ -7,7 +7,8 @@ from resources import Resources
 class Marsh(pygame.sprite.Sprite):
   """A marsh
   Returns: marsh object
-  Functions: update"""
+  Functions: update
+  """
 
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)

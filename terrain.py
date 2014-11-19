@@ -19,3 +19,9 @@ class Terrain(pygame.sprite.Group):
       while pygame.sprite.spritecollideany(tree, self) is None:
         self.add_internal(tree)
 
+  def gettreelist(self):
+    treelist = []
+    for sprite in self.sprites():
+      if isinstance(sprite, Tree):
+        treelist.append(sprite)
+    return treelist

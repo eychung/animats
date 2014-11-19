@@ -1,13 +1,15 @@
 import math
 import pygame
 from pygame.locals import *
+from operator import itemgetter
 from resources import Resources
 
 class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
   Returns: beaver object
   Functions: update, calcnewpos
-  Attributes: energy, energybar, rect, vector"""
+  Attributes: energy, energybar, rect, vector
+  """
 
   def __init__(self, vector):
     pygame.sprite.Sprite.__init__(self)
@@ -19,17 +21,45 @@ class Beaver(pygame.sprite.Sprite):
 
     self.energy = 100
     self.energybar = self.rect.width
+    self.eyeview = []
     self.vector = vector
 
-  def updateenergy(self):
-    self.energybar = self.rect.width * (self.energy/100)
+  """The beaver can observe trees within a 100x100 rect.
+  Saves trees within eye viewing distance into internal list.
+  """
+  def seteyeview(self, treelist):
+    x = max(0, self.rect.centerx - 50)
+    y = max(0, self.rect.centery - 50)
+    eyeviewrect = Rect(x, y, 100, 100)
+    self.eyeview = []
+    for tree in treelist:
+      if eyeviewrect.colliderect(tree.rect):
+        self.eyeview.append((tree, 
+          self.calcrectcenterdistance(self.rect, tree.rect)))
 
-  def update(self):
-    self.updateenergy()
-    newpos = self.calcnewpos(self.rect, self.vector)
-    self.rect = newpos
+  def setscentview(self, animatslist):
+    pass
+
+  def calcrectcenterdistance(self, r1, r2):
+    return math.hypot(r2.centerx - r1.centerx, r2.centery - r1.centery)
+
+  """Values of the eight adjacent spots the beaver can move to.
+  In the future, we may influence these values based on proximity
+  to home as well or simply have it learn it.
+  """
+  def calcadjvals(self):
+    sortedeyeview = sorted(self.eyeview, key=itemgetter(1))
 
   def calcnewpos(self, rect, vector):
     (angle, z) = vector
     (dx, dy) = (z * math.cos(angle), z * math.sin(angle))
     return rect.move(dx, dy)
+
+  def updateenergy(self):
+    self.energybar = self.rect.width * (self.energy/100)
+
+  def update(self):
+    self.energy -= .05
+    self.updateenergy()
+    newpos = self.calcnewpos(self.rect, self.vector)
+    self.rect = newpos

@@ -8,7 +8,8 @@ class Tree(pygame.sprite.Sprite):
   """A tree
   Returns: tree object
   Functions: update
-  Attributes: health, healthbar"""
+  Attributes: health, healthbar
+  """
 
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
