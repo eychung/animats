@@ -54,6 +54,9 @@ class Beaver(pygame.sprite.Sprite):
       (self.rect.centerx + self.CONST_STEP_SIZE, # bottom right
       self.rect.centery + self.CONST_STEP_SIZE)]
 
+  def setstate(self, state):
+      self.state = state
+
   """The beaver can observe trees within a 100x100 rect.
   Saves trees within eye viewing distance into internal list.
   """

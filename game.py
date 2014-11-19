@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from beaver import Beaver
+from marsh import Marsh
 from terrain import Terrain
 from tree import Tree
 
@@ -40,7 +41,7 @@ class Game:
 
     tree = pygame.sprite.spritecollideany(self.beaver,
       self.terrain.terraingroup)
-    if tree is not None:
+    if tree is not None and not isinstance(tree, Marsh):
       # Check beaver state
       if self.beaver.state == Beaver.CONST_STATE_EAT:
         tree.setstate(Tree.CONST_STATE_ATE)
@@ -52,6 +53,7 @@ class Game:
       # Check tree state
       if tree.health <= 0:
         tree.kill()
+        self.beaver.setstate(Beaver.CONST_STATE_WALK)
 
   def on_render(self):
     self.background.fill((255, 255, 255))
