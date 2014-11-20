@@ -4,6 +4,7 @@ from beaver import Beaver
 from marsh import Marsh
 from terrain import Terrain
 from tree import Tree
+from wolf import Wolf
 
 BG_COLOR = (0, 92, 9)
 HEALTHBAR_COLOR = (0, 255, 0)
@@ -30,6 +31,9 @@ class Game:
 
     self.beaver = Beaver((0.47, 1))
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
+
+    self.wolf = Wolf()
+    self.wolfsprite = pygame.sprite.RenderPlain(self.wolf)
 
     self._clock = pygame.time.Clock()
     self._running = True
@@ -58,13 +62,20 @@ class Game:
         tree.kill()
         self.beaver.setstate(Beaver.CONST_STATE_WALK_LAND)
 
+    if self.beaver.energy <= 0:
+        self.beaver.kill()
+
+    self.wolf.setscentview(self.beaver)
+    self.wolfsprite.update()
+
   def on_render(self):
     self.background.fill(BG_COLOR)
     self.screen.blit(self.background, (0, 0))
 
-    # Draws beaver, marsh, and tree sprites
+    # Draws beaver, wolf, marsh, and tree sprites
     self.terrain.terraingroup.draw(self.screen)
     self.beaversprite.draw(self.screen)
+    self.wolfsprite.draw(self.screen)
 
     # Draws energy and health bars of beaver and trees
     bx, by = self.beaver.rect.topleft

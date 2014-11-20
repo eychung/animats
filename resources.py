@@ -1,3 +1,4 @@
+import math
 import os
 import pygame
 from pygame.locals import *
@@ -17,3 +18,7 @@ class Resources:
       print 'Cannot load image:', fullname
       raise SystemExit, message
     return image, image.get_rect()
+
+  @staticmethod
+  def calcdistance(p1, p2):
+    return math.hypot(p2[0] - p1[0], p2[1] - p1[1])

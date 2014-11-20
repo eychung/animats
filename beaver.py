@@ -11,12 +11,14 @@ class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
   Returns: beaver object
   Functions: update, calcnewpos
-  Attributes: adjlist, energy, energybar, rect, state, stepsize, vector
+  Attributes: adjlist, energy, energybar, eyeview, rect, scentview,
+    state, stepsize, vector
   """
 
   CONST_VIEW_DIST = 100
+  CONST_SCENT_DIST = 200
   CONST_STEP_SIZE_LAND = 1 # pixels
-  CONST_STEP_SIZE_WATER = 2
+  CONST_STEP_SIZE_WATER = 4
 
   CONST_STATE_WALK_LAND = 0
   CONST_STATE_WALK_WATER = 1
@@ -41,6 +43,7 @@ class Beaver(pygame.sprite.Sprite):
     self.energy = 100
     self.energybar = self.rect.width
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
+    self.scentview = [] # Contains knowledge of nearby wolf by scent
     self.state = self.CONST_STATE_WALK_WATER
     self.stepsize = self.CONST_STEP_SIZE_WATER
     self.vector = vector
@@ -86,15 +89,20 @@ class Beaver(pygame.sprite.Sprite):
       if eyeviewrect.colliderect(sprite.rect):
         self.eyeview.append(sprite)
 
-  def setscentview(self, animatslist):
-    pass
+  def setscentview(self, wolf):
+    x = self.rect.centerx - self.CONST_SCENT_DIST
+    y = self.rect.centery - self.CONST_SCENT_DIST
+    scentviewrect = Rect(x, y, self.CONST_SCENT_DIST*2, self.CONST_SCENT_DIST*2)
+    self.scentview = []
+    if scentviewrect.colliderect(wolf.rect):
+      self.scentview.append(wolf)
 
   def gettreedisttuple(self, spritelist, point):
     treedisttuple = []
     for sprite in spritelist:
       if isinstance(sprite, Tree):
         treedisttuple.append((sprite,
-          self.calcdistance(point, sprite.rect.center)))
+          Resources.calcdistance(point, sprite.rect.center)))
     return treedisttuple
 
   def gettreeview(self, view):
@@ -103,9 +111,6 @@ class Beaver(pygame.sprite.Sprite):
       if isinstance(sprite, Tree):
         treeinfo.append(sprite)
     return treeinfo
-
-  def calcdistance(self, p1, p2):
-    return math.hypot(p2[0] - p1[0], p2[1] - p1[1])
 
   """Return a list of eight values for the beaver's adjacency list.
   High values are favored. In the future, we may either influence these
@@ -131,7 +136,7 @@ class Beaver(pygame.sprite.Sprite):
       adjvals = self.calcadjvals()
       if adjvals:
         moveto = self.adjpoints[adjvals.index(max(adjvals))]
-        print str(self.rect.center) + " moving to " + str(moveto)
+        #print str(self.rect.center) + " moving to " + str(moveto)
         # Note that the move function returns a new rect moved by offset
         offsetx = moveto[0] - self.rect.centerx
         offsety = moveto[1] - self.rect.centery
@@ -155,15 +160,15 @@ class Beaver(pygame.sprite.Sprite):
     self.energybar = self.rect.width * min(1, (self.energy/100.0))
 
   def update(self):
-    # First check if need to change states
+    # First, check if need to change states
     if self.gettreeview(self.eyeview) and self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
       self.setstate(self.CONST_STATE_EAT)
 
+    # Second, check if beaver is in water or not
     onwater = False
     for sprite in self.eyeview:
       if isinstance(sprite, Marsh) and pygame.sprite.collide_rect(self, sprite):
         onwater = True
-
     if onwater:
       self.setstepsize(self.CONST_STEP_SIZE_WATER)
     else:
