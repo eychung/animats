@@ -161,7 +161,7 @@ class Beaver(pygame.sprite.Sprite):
 
     onwater = False
     for sprite in self.eyeview:
-      if isinstance(sprite, Marsh):
+      if isinstance(sprite, Marsh) and pygame.sprite.collide_rect(self, sprite):
         onwater = True
 
     if onwater:
