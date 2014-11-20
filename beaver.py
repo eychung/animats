@@ -6,6 +6,7 @@ from operator import itemgetter
 from marsh import Marsh
 from resources import Resources
 from tree import Tree
+from brain import Brain
 
 class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
@@ -51,6 +52,8 @@ class Beaver(pygame.sprite.Sprite):
     # Top left, top, top right, left, right, bottom left, bottom, bottom right
     self.setadjpoints()
 
+    self.brain = Brain()
+
   def setadjpoints(self):
     self.adjpoints = [
       (self.rect.centerx - self.stepsize, # top left
@@ -58,7 +61,7 @@ class Beaver(pygame.sprite.Sprite):
       (self.rect.centerx, # top
       self.rect.centery - self.stepsize),
       (self.rect.centerx + self.stepsize, # top right
-      self.rect.centery - self.stepsize), 
+      self.rect.centery - self.stepsize),
       (self.rect.centerx - self.stepsize, # left
       self.rect.centery),
       (self.rect.centerx + self.stepsize, # right
@@ -69,6 +72,9 @@ class Beaver(pygame.sprite.Sprite):
       self.rect.centery + self.stepsize),
       (self.rect.centerx + self.stepsize, # bottom right
       self.rect.centery + self.stepsize)]
+
+  def setbrain(self, brain):
+    self.brain = brain
 
   def setstate(self, state):
     #print "beaver state is changed to " + str(state)
@@ -117,7 +123,7 @@ class Beaver(pygame.sprite.Sprite):
   values based on distance from home or learn it.
 
   """
-  def calcadjvals(self):
+  def calcadjvalsfood(self):
     adjvals = []
     treeinfo = self.gettreeview(self.eyeview)
     if treeinfo:
@@ -130,12 +136,41 @@ class Beaver(pygame.sprite.Sprite):
         adjvals.append(1 - normalizeddist)
     return adjvals
 
+  def calcadjvalspred(self):
+    adjvals = []
+    if self.scentview:
+      scentpoint = self.scentview[0].rect.center
+      for point in self.adjpoints:
+        scentdisttuple = [(self.scentview[0], Resources.calcdistance(scentpoint, point))]
+        shortestdist = sorted(scentdisttuple, key=itemgetter(1))[0][1]
+        normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
+        adjvals.append(1 - normalizeddist)
+
+    return adjvals
+
+  def calcadjvalsmarsh(self):
+    adjvals = []
+    for sprite in self.eyeview:
+      if isinstance(sprite, Marsh):
+        marshpoint = sprite.rect.center
+        for point in self.adjpoints:
+          marshdisttuple = [(sprite, Resources.calcdistance(marshpoint, point))]
+          shortestdist = sorted(marshdisttuple, key=itemgetter(1))[0][1]
+          normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
+          adjvals.append(1 - normalizeddist)
+    return adjvals
+
   def calcnewpos(self, rect):
     if self.state == self.CONST_STATE_WALK_LAND or self.state == self.CONST_STATE_WALK_WATER:
       self.setadjpoints()
-      adjvals = self.calcadjvals()
-      if adjvals:
-        moveto = self.adjpoints[adjvals.index(max(adjvals))]
+      adjvalsfood = self.calcadjvalsfood()
+      adjvalspred = self.calcadjvalspred()
+      adjvalsmarsh = self.calcadjvalsmarsh()
+      adjpointidx = self.brain.getmaxadjidx(adjvalsfood, adjvalspred,
+                                            adjvalsmarsh)
+
+      if adjpointidx is not None:
+        moveto = self.adjpoints[adjpointidx]
         #print str(self.rect.center) + " moving to " + str(moveto)
         # Note that the move function returns a new rect moved by offset
         offsetx = moveto[0] - self.rect.centerx
