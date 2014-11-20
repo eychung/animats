@@ -39,7 +39,7 @@ class Game:
       self._running = False
 
   def on_loop(self):
-    self.beaver.seteyeview(self.terrain.gettreelist())
+    self.beaver.seteyeview(self.terrain.terraingroup)
     self.beaversprite.update()
 
     tree = pygame.sprite.spritecollideany(self.beaver,
@@ -56,7 +56,7 @@ class Game:
       # Check tree state
       if tree.health <= 0:
         tree.kill()
-        self.beaver.setstate(Beaver.CONST_STATE_WALK)
+        self.beaver.setstate(Beaver.CONST_STATE_WALK_LAND)
 
   def on_render(self):
     self.background.fill(BG_COLOR)
