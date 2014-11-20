@@ -73,7 +73,6 @@ class Wolf(pygame.sprite.Sprite):
     self.setadjpoints()
     adjvals = []
     if self.scentview:
-      print self.adjpoints
       for point in self.adjpoints:
         shortestdist = Resources.calcdistance(point, self.scentview[0].rect.center)
         normalizeddist = shortestdist/(self.CONST_SCENT_DIST * math.sqrt(2))
@@ -94,6 +93,10 @@ class Wolf(pygame.sprite.Sprite):
     else: # Move randomly
       offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
       offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
+      while (self.eyeview and
+        self.eyeview[0].rect.collidepoint((offsetx, offsety))):
+        offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
+        offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
       return rect.move(offsetx, offsety)
 
   def update(self):
