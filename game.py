@@ -29,7 +29,7 @@ class Game:
 
     self.terrain = Terrain()
 
-    self.beaver = Beaver((0.47, 1))
+    self.beaver = Beaver()
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
 
     self.wolf = Wolf()
@@ -64,7 +64,11 @@ class Game:
 
     if self.beaver.energy <= 0:
         self.beaver.kill()
+        self.beaver = None
+        self.beaver = Beaver()
+        self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
 
+    self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)
     self.wolfsprite.update()
 
