@@ -60,6 +60,7 @@ class Game:
       # Check tree state
       if tree.health <= 0:
         tree.kill()
+        tree = None
         self.beaver.setstate(Beaver.CONST_STATE_WALK_LAND)
 
     if self.beaver.energy <= 0:
