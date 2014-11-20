@@ -12,7 +12,7 @@ class Beaver(pygame.sprite.Sprite):
   Returns: beaver object
   Functions: update, calcnewpos
   Attributes: adjlist, energy, energybar, eyeview, rect, scentview,
-    state, stepsize, vector
+    state, stepsize
   """
 
   CONST_VIEW_DIST = 100
@@ -25,7 +25,7 @@ class Beaver(pygame.sprite.Sprite):
   CONST_STATE_EAT = 2
   CONST_STATE_FORAGE = 3
 
-  def __init__(self, vector):
+  def __init__(self):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('beaver.png')
     originalsize = self.image.get_size()
@@ -46,7 +46,6 @@ class Beaver(pygame.sprite.Sprite):
     self.scentview = [] # Contains knowledge of nearby wolf by scent
     self.state = self.CONST_STATE_WALK_WATER
     self.stepsize = self.CONST_STEP_SIZE_WATER
-    self.vector = vector
 
     # Top left, top, top right, left, right, bottom left, bottom, bottom right
     self.setadjpoints()
@@ -118,6 +117,7 @@ class Beaver(pygame.sprite.Sprite):
 
   """
   def calcadjvals(self):
+    self.setadjpoints()
     adjvals = []
     treeinfo = self.gettreeview(self.eyeview)
     if treeinfo:
@@ -131,8 +131,8 @@ class Beaver(pygame.sprite.Sprite):
     return adjvals
 
   def calcnewpos(self, rect):
-    if self.state == self.CONST_STATE_WALK_LAND or self.state == self.CONST_STATE_WALK_WATER:
-      self.setadjpoints()
+    if (self.state == self.CONST_STATE_WALK_LAND or
+      self.state == self.CONST_STATE_WALK_WATER):
       adjvals = self.calcadjvals()
       if adjvals:
         moveto = self.adjpoints[adjvals.index(max(adjvals))]
@@ -150,7 +150,7 @@ class Beaver(pygame.sprite.Sprite):
 
   def updateenergy(self):
     if self.state == self.CONST_STATE_WALK_LAND:
-      self.energy -= .05
+      self.energy -= .5
     elif self.state == self.CONST_STATE_WALK_WATER:
       self.energy -= .025
     elif self.state == self.CONST_STATE_EAT:
@@ -161,7 +161,8 @@ class Beaver(pygame.sprite.Sprite):
 
   def update(self):
     # First, check if need to change states
-    if self.gettreeview(self.eyeview) and self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
+    if (self.gettreeview(self.eyeview) and
+      self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.setstate(self.CONST_STATE_EAT)
 
     # Second, check if beaver is in water or not
