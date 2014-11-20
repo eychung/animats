@@ -77,10 +77,12 @@ class Wolf(pygame.sprite.Sprite):
       moveto = self.adjpoints[adjvals.index(max(adjvals))]
       offsetx = moveto[0] - self.rect.centerx
       offsety = moveto[1] - self.rect.centery
+      print "moving to " + str(moveto)
       return rect.move(offsetx, offsety)
     else: # Move randomly
-      offsetx = random.randint(0, 1)*2 - 1 * self.stepsize
-      offsety = random.randint(0, 1)*2 - 1 * self.stepsize
+      offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
+      offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
+      print "moving randomly" + str(offsetx) + " and " + str(offsety)
       return rect.move(offsetx, offsety)
 
   def update(self):

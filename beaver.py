@@ -142,8 +142,8 @@ class Beaver(pygame.sprite.Sprite):
         offsety = moveto[1] - self.rect.centery
         return rect.move(offsetx, offsety)
       else: # Pick random location to move to if can't view any nearby trees
-        offsetx = random.randint(0, 1)*2 - 1 * self.stepsize
-        offsety = random.randint(0, 1)*2 - 1 * self.stepsize
+        offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
+        offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
         return rect.move(offsetx, offsety)
     else: # CONST_STATE_EAT or CONST_STATE_FORAGE
       return self.rect # Don't move
