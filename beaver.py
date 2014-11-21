@@ -132,7 +132,9 @@ class Beaver(pygame.sprite.Sprite):
         # Get the distance to the closest tree
         # Sorting may be useful for later ops
         shortestdist = sorted(treedisttuple, key=itemgetter(1))[0][1]
-        normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
+        normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2) +
+          math.sqrt(pow(treeinfo[0].rect.width, 2) + pow(treeinfo[0].rect.height, 2)))
+        #normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
     return adjvals
 
@@ -171,15 +173,17 @@ class Beaver(pygame.sprite.Sprite):
       adjpointidx = self.brain.getmaxadjidx(adjvalsfood, adjvalspred,
         adjvalsmarsh)
 
-      if adjpointidx is not None and adjvalsfood:
-        moveto = self.adjpoints[adjvalsfood.index(max(adjvalsfood))]
-        #moveto = self.adjpoints[adjpointidx]
-        #print str(self.rect.center) + " moving to " + str(moveto)
+      if adjvalsfood:
+        print "Using brain max in homing " + str(adjpointidx)
+        #moveto = self.adjpoints[adjvalsfood.index(max(adjvalsfood))]
+        moveto = self.adjpoints[adjpointidx]
+        print "Fixed moving from " + str(self.rect.center) + " moving to " + str(moveto) + '\n'
         # Note that the move function returns a new rect moved by offset
         offsetx = moveto[0] - self.rect.width/2 - self.rect.x
         offsety = moveto[1] - self.rect.height/2 - self.rect.y
         return rect.move(offsetx, offsety)
       else: # Pick random location to move to if can't view any nearby trees
+        print "Moving randomly and not using " + str(adjpointidx) + '\n'
         while True:
           offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
           offsety = (random.randint(0, 1)*2 - 1) * self.stepsize

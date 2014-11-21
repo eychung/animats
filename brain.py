@@ -14,19 +14,21 @@ class Brain:
 
     self.n = n
 
-  def getmaxadjidx(self, foodAdjVals, predAdjVals, marshAdjVals):
-    if not foodAdjVals:
-      foodAdjVals = [0] * 8
-    if not predAdjVals:
-      predAdjVals = [0] * 8
-    if not marshAdjVals:
-      marshAdjVals = [0] * 8
+  def getmaxadjidx(self, adjvalsfood, adjvalspred, adjvalsmarsh):
+    if not adjvalsfood:
+      adjvalsfood = [0] * 8
+    if not adjvalspred:
+      adjvalspred = [0] * 8
+    #if not adjvalsmarsh:
+      adjvalsmarsh = [0] * 8
 
+    print adjvalsfood
     maxIdx = 0
-    maxVal = self.n.activate((foodAdjVals[0], predAdjVals[0], marshAdjVals[0]))
-    for i in xrange(len(foodAdjVals)):
-      val = self.n.activate((foodAdjVals[i], predAdjVals[i], marshAdjVals[i]))
-      if val > maxVal:
+    maxVal = self.n.activate((adjvalsfood[0], adjvalspred[0], adjvalsmarsh[0]))
+    for i in xrange(len(adjvalsfood)):
+      val = self.n.activate((adjvalsfood[i], adjvalspred[i], adjvalsmarsh[i]))
+      if val < maxVal:
         maxIdx = i
         maxVal = val
+      print str(val) + " for " + str(adjvalsfood[i]) + ", " + str(adjvalspred[i]) + ", " + str(adjvalsmarsh[i])
     return maxIdx
