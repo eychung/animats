@@ -12,7 +12,7 @@ class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
   Returns: beaver object
   Functions: update, calcnewpos
-  Attributes: adjlist, energy, energybar, eyeview, rect, scentview,
+  Attributes: adjlist, energy, energybar, eyeview, inwater, rect, scentview,
     state, stepsize
   """
 
@@ -21,10 +21,9 @@ class Beaver(pygame.sprite.Sprite):
   CONST_STEP_SIZE_LAND = 1 # pixels
   CONST_STEP_SIZE_WATER = 4
 
-  CONST_STATE_WALK_LAND = 0
-  CONST_STATE_WALK_WATER = 1
-  CONST_STATE_EAT = 2
-  CONST_STATE_FORAGE = 3
+  CONST_STATE_WALK = 0
+  CONST_STATE_EAT = 1
+  CONST_STATE_FORAGE = 2
 
   def __init__(self):
     pygame.sprite.Sprite.__init__(self)
@@ -44,8 +43,9 @@ class Beaver(pygame.sprite.Sprite):
     self.energy = 100
     self.energybar = self.rect.width
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
+    self.inwater = True # Beaver spawns in marsh
     self.scentview = [] # Contains knowledge of nearby wolf by scent
-    self.state = self.CONST_STATE_WALK_WATER
+    self.state = self.CONST_STATE_WALK
     self.stepsize = self.CONST_STEP_SIZE_WATER
 
     # Top left, top, top right, left, right, bottom left, bottom, bottom right
@@ -97,7 +97,8 @@ class Beaver(pygame.sprite.Sprite):
   def setscentview(self, wolf):
     x = self.rect.centerx - self.CONST_SCENT_DIST
     y = self.rect.centery - self.CONST_SCENT_DIST
-    scentviewrect = Rect(x, y, self.CONST_SCENT_DIST*2, self.CONST_SCENT_DIST*2)
+    scentviewrect = Rect(x, y, self.CONST_SCENT_DIST*2,
+      self.CONST_SCENT_DIST*2)
     self.scentview = []
     if scentviewrect.colliderect(wolf.rect):
       self.scentview.append(wolf)
@@ -140,7 +141,8 @@ class Beaver(pygame.sprite.Sprite):
     if self.scentview:
       scentpoint = self.scentview[0].rect.center
       for point in self.adjpoints:
-        scentdisttuple = [(self.scentview[0], Resources.calcdistance(scentpoint, point))]
+        scentdisttuple = [(self.scentview[0],
+          Resources.calcdistance(scentpoint, point))]
         shortestdist = sorted(scentdisttuple, key=itemgetter(1))[0][1]
         normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
@@ -153,59 +155,71 @@ class Beaver(pygame.sprite.Sprite):
       if isinstance(sprite, Marsh):
         marshpoint = sprite.rect.center
         for point in self.adjpoints:
-          marshdisttuple = [(sprite, Resources.calcdistance(marshpoint, point))]
+          marshdisttuple = [(sprite,
+            Resources.calcdistance(marshpoint, point))]
           shortestdist = sorted(marshdisttuple, key=itemgetter(1))[0][1]
           normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
           adjvals.append(1 - normalizeddist)
     return adjvals
 
   def calcnewpos(self, rect):
-    if (self.state == self.CONST_STATE_WALK_LAND or
-      self.state == self.CONST_STATE_WALK_WATER):
+    if self.state == self.CONST_STATE_WALK:
       self.setadjpoints()
       adjvalsfood = self.calcadjvalsfood()
       adjvalspred = self.calcadjvalspred()
       adjvalsmarsh = self.calcadjvalsmarsh()
       adjpointidx = self.brain.getmaxadjidx(adjvalsfood, adjvalspred,
-                                            adjvalsmarsh)
+        adjvalsmarsh)
 
-      if adjpointidx is not None:
-        moveto = self.adjpoints[adjpointidx]
+      if adjpointidx is not None and adjvalsfood:
+        moveto = self.adjpoints[adjvalsfood.index(max(adjvalsfood))]
+        #moveto = self.adjpoints[adjpointidx]
         #print str(self.rect.center) + " moving to " + str(moveto)
         # Note that the move function returns a new rect moved by offset
-        offsetx = moveto[0] - self.rect.centerx
-        offsety = moveto[1] - self.rect.centery
+        offsetx = moveto[0] - self.rect.width/2 - self.rect.x
+        offsety = moveto[1] - self.rect.height/2 - self.rect.y
         return rect.move(offsetx, offsety)
       else: # Pick random location to move to if can't view any nearby trees
-        offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
-        offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
+        while True:
+          offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
+          offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
+          newx = self.rect.x + offsetx - self.rect.width/2
+          newy = self.rect.y + offsety - self.rect.height/2
+          if newx >= 0 and newy >= 0:
+            break
         return rect.move(offsetx, offsety)
     else: # CONST_STATE_EAT or CONST_STATE_FORAGE
       return self.rect # Don't move
 
   def updateenergy(self):
-    if self.state == self.CONST_STATE_WALK_LAND:
-      self.energy -= .5
-    elif self.state == self.CONST_STATE_WALK_WATER:
-      self.energy -= .025
+    if self.state == self.CONST_STATE_WALK:
+      if self.inwater:
+        self.energy -= 0.025
+      else:
+        self.energy -= 0.5
     elif self.state == self.CONST_STATE_EAT:
       self.energy += .1
     elif self.state == self.CONST_STATE_FORAGE:
       self.energy -= .1
     self.energybar = self.rect.width * min(1, (self.energy/100.0))
 
+  def updateloc(self):
+    self.inwater = False
+    for sprite in self.eyeview:
+      if (isinstance(sprite, Marsh) and
+        pygame.sprite.collide_rect(self, sprite)):
+        self.inwater = True
+
   def update(self):
     # First, check if need to change states
+    # If beaver is on tree, we assume it eats it
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.setstate(self.CONST_STATE_EAT)
 
     # Second, check if beaver is in water or not
-    onwater = False
-    for sprite in self.eyeview:
-      if isinstance(sprite, Marsh) and pygame.sprite.collide_rect(self, sprite):
-        onwater = True
-    if onwater:
+    self.updateloc()
+    if self.inwater:
       self.setstepsize(self.CONST_STEP_SIZE_WATER)
     else:
       self.setstepsize(self.CONST_STEP_SIZE_LAND)

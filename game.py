@@ -46,32 +46,33 @@ class Game:
     self.beaver.seteyeview(self.terrain.terraingroup)
     self.beaversprite.update()
 
-    tree = pygame.sprite.spritecollideany(self.beaver,
-      self.terrain.gettreelist())
-    if tree is not None and not isinstance(tree, Marsh):
-      # Check beaver state
-      if self.beaver.state == Beaver.CONST_STATE_EAT:
-        tree.setstate(Tree.CONST_STATE_ATE)
-        tree.update()
-      elif self.beaver.state == Beaver.CONST_STATE_FORAGE:
-        tree.setstate(Tree.CONST_STATE_FORAGED)
-        tree.update()
-
-      # Check tree state
-      if tree.health <= 0:
-        tree.kill()
-        tree = None
-        self.beaver.setstate(Beaver.CONST_STATE_WALK_LAND)
-
-    if self.beaver.energy <= 0:
-        self.beaver.kill()
-        self.beaver = None
-        self.beaver = Beaver()
-        self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
-
     self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)
     self.wolfsprite.update()
+
+    if (self.beaver.energy <= 0 or
+      self.beaver.rect.colliderect(self.wolf.rect)):
+      self.beaver.kill()
+      self.beaver = None
+      self.beaver = Beaver()
+      self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
+    else:
+      tree = pygame.sprite.spritecollideany(self.beaver,
+        self.terrain.gettreelist())
+      if tree is not None and not isinstance(tree, Marsh):
+        # Check beaver state
+        if self.beaver.state == Beaver.CONST_STATE_EAT:
+          tree.setstate(Tree.CONST_STATE_ATE)
+          tree.update()
+        elif self.beaver.state == Beaver.CONST_STATE_FORAGE:
+          tree.setstate(Tree.CONST_STATE_FORAGED)
+          tree.update()
+
+        # Check tree state
+        if tree.health <= 0:
+          tree.kill()
+          tree = None
+          self.beaver.setstate(Beaver.CONST_STATE_WALK)
 
   def on_render(self):
     self.background.fill(BG_COLOR)

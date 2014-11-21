@@ -81,22 +81,44 @@ class Wolf(pygame.sprite.Sprite):
 
   def calcnewpos(self, rect):
     adjvals = self.calcadjvals()
-    if adjvals:
+    if adjvals: # Beaver is present
       sortedadjvals = sorted(adjvals)
-      while (self.eyeview and
-        self.eyeview[0].rect.collidepoint(self.adjpoints[adjvals.index(max(adjvals))])):
-        adjvals[adjvals.index(max(adjvals))] = -403 # Not allowed to walk on marsh
-      moveto = self.adjpoints[adjvals.index(max(adjvals))]
-      offsetx = moveto[0] - self.rect.centerx
-      offsety = moveto[1] - self.rect.centery
+      while True:
+        maxpoint = self.adjpoints[adjvals.index(max(adjvals))]
+        # If wolf sees marsh, we must make sure it does not enter it
+        if self.eyeview:
+          newx = maxpoint[0] - self.rect.width/2
+          newy = maxpoint[1] - self.rect.height/2
+          temprect = pygame.Rect(newx, newy, self.rect.width, self.rect.height)
+          # If maxpoint makes wolf go into marsh or off screen, we must find a new point
+          if newx < 0 or newy < 0 or self.eyeview[0].rect.colliderect(temprect):
+            adjvals[adjvals.index(max(adjvals))] = -403
+          else:
+            break
+        # Wolf is not close to marsh, so move however
+        else:
+          break
+      maxpoint = self.adjpoints[adjvals.index(max(adjvals))]
+      offsetx = maxpoint[0] - self.rect.width/2 - self.rect.x
+      offsety = maxpoint[1] - self.rect.height/2 - self.rect.y
       return rect.move(offsetx, offsety)
     else: # Move randomly
       offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
       offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
-      while (self.eyeview and
-        self.eyeview[0].rect.collidepoint((offsetx, offsety))):
+      while True:
         offsetx = (random.randint(0, 1)*2 - 1) * self.stepsize
         offsety = (random.randint(0, 1)*2 - 1) * self.stepsize
+        newx = self.rect.x + offsetx
+        newy = self.rect.y + offsety
+        # This assumes that the step size is greater than its view distance
+        temprect = pygame.Rect(newx, newy, self.rect.width, self.rect.height)
+        if newx >= 0 and newy >= 0:
+          # If wolf does not see marsh, move however
+          if not self.eyeview:
+            break
+          # If wolf sees marsh but next move will not move it into marsh
+          elif self.eyeview and not self.eyeview[0].rect.colliderect(temprect):
+            break
       return rect.move(offsetx, offsety)
 
   def update(self):
