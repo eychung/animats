@@ -26,3 +26,7 @@ class Terrain:
         treelist.append(sprite)
     return treelist
 
+  def getmarsh(self):
+    for sprite in self.terraingroup.sprites():
+      if isinstance(sprite, Marsh):
+        return sprite

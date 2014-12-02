@@ -50,6 +50,11 @@ class Game:
     self.wolf.setscentview(self.beaver)
     self.wolfsprite.update()
 
+
+    marsh = self.terrain.getmarsh()
+    if marsh is not None:
+      marsh.update()
+
     if (self.beaver.energy <= 0 or
       self.beaver.rect.colliderect(self.wolf.rect)):
       self.beaver.kill()
