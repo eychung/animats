@@ -23,6 +23,14 @@ class Wolf(pygame.sprite.Sprite):
     newsize = self.image.get_size()
     self.rect = self.image.get_rect()
 
+    # Start wolf on one of the four corners of the screen
+    screen = pygame.display.get_surface()
+    self.maxposx = screen.get_width() - newsize[0]
+    self.maxposy = screen.get_height() - newsize[1]
+    newposx = random.choice((0, self.maxposx))
+    newposy = random.choice((0, self.maxposy))
+    self.rect.move_ip(newposx, newposy)
+
     self.eyeview = []
     self.scentview = []
     self.stepsize = self.CONST_STEP_SIZE
@@ -37,7 +45,7 @@ class Wolf(pygame.sprite.Sprite):
       (self.rect.centerx, # top
       self.rect.centery - self.stepsize),
       (self.rect.centerx + self.stepsize, # top right
-      self.rect.centery - self.stepsize), 
+      self.rect.centery - self.stepsize),
       (self.rect.centerx - self.stepsize, # left
       self.rect.centery),
       (self.rect.centerx + self.stepsize, # right
@@ -91,7 +99,10 @@ class Wolf(pygame.sprite.Sprite):
           newy = maxpoint[1] - self.rect.height/2
           temprect = pygame.Rect(newx, newy, self.rect.width, self.rect.height)
           # If maxpoint makes wolf go into marsh or off screen, we must find a new point
-          if newx < 0 or newy < 0 or self.eyeview[0].rect.colliderect(temprect):
+          screen = pygame.display.get_surface()
+          if (newx < 0 or newy < 0 or
+              newx > self.maxposx or newy > self.maxposy or
+              self.eyeview[0].rect.colliderect(temprect)):
             adjvals[adjvals.index(max(adjvals))] = -403
           else:
             break
@@ -112,7 +123,8 @@ class Wolf(pygame.sprite.Sprite):
         newy = self.rect.y + offsety
         # This assumes that the step size is greater than its view distance
         temprect = pygame.Rect(newx, newy, self.rect.width, self.rect.height)
-        if newx >= 0 and newy >= 0:
+        if (newx >= 0 and newy >= 0 and
+            newx <= self.maxposx and newy <= self.maxposy):
           # If wolf does not see marsh, move however
           if not self.eyeview:
             break

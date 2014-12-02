@@ -61,6 +61,14 @@ class Game:
       self.beaver = None
       self.beaver = Beaver()
       self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
+
+      # Reset the wolf so that it seems as if time has passed
+      # (aka wolf not lurking around marsh on beaver spawn)
+      self.wolf.kill()
+      self.wolf = None
+      self.wolf = Wolf()
+      self.wolfsprite = pygame.sprite.RenderPlain(self.wolf)
+
     else:
       tree = pygame.sprite.spritecollideany(self.beaver,
         self.terrain.gettreelist())
