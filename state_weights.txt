@@ -1,0 +1,28 @@
+beaver energy zero,0
+beaver energy low,0.3
+beaver energy med,0.6
+beaver energy high,1
+break
+marsh energy low,0.1
+marsh energy med,0.5
+marsh energy high,1
+break
+has lumber,0.5
+no lumber,0.5
+break
+see tree,0.6
+at tree,1
+none tree,0.3
+break
+see marsh,0.5
+at marsh,0.5
+none marsh,0.2
+break
+see wolf,0.05
+none wolf,0.7
+action
+move towards tree,0.9
+move towards marsh,0.5
+eat,1.0
+pick up lumber,0.5
+drop lumber,0.5
