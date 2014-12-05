@@ -1,34 +1,32 @@
-from pybrain.structure import FeedForwardNetwork
-from pybrain.structure import LinearLayer, SigmoidLayer
-from pybrain.structure import FullConnection
+from pybrain.rl.learners.valuebased import ActionValueTable
+from pybrain.rl.agents import LearningAgent
+from pybrain.rl.learners import Q
+from pybrain.rl.experiments import Experiment
+from pybrain.rl.environments import Task
+from pybrain.rl.explorers import EpsilonGreedyExplorer
+from beaver_env import BeaverEnv
+from beaver_task import BeaverTask
+from constants import Constants
 
 class Brain:
   def __init__(self):
-    n = FeedForwardNetwork()
-    n.addInputModule(LinearLayer(3, name='in'))
-    #n.addModule(SigmoidLayer(3, name='hidden'))
-    n.addOutputModule(LinearLayer(1, name='out'))
-    #n.addConnection(FullConnection(n['in'], n['hidden'], name='c1'))
-    #n.addConnection(FullConnection(n['hidden'], n['out'], name='c2'))
-    n.addConnection(FullConnection(n['in'], n['out'], name='c1'))
-    n.sortModules()
+    self.interactionscount = 0
 
-    self.n = n
+    # Define action-value table
+    controller = ActionValueTable(Constants.NUM_STATES, Constants.NUM_ACTIONS)
+    controller.initialize(1.)
 
-  def getmaxadjidx(self, adjvalsfood, adjvalspred, adjvalsmarsh):
-    if not adjvalsfood:
-      adjvalsfood = [0] * 8
-    #if not adjvalspred:
-    adjvalspred = [0] * 8
-    #if not adjvalsmarsh:
-    adjvalsmarsh = [0] * 8
+    # Define Q-learning agent where alpha is 0.5 and gamma is 0.0
+    learner = Q(0.5, 0.0)
+    #learner._setExplorer(EpsilonGreedyExplorer(0.0))
+    agent = LearningAgent(controller, learner)
 
-    maxIdx = 0
-    maxVal = self.n.activate((adjvalsfood[0], adjvalspred[0], adjvalsmarsh[0]))
-    for i in xrange(len(adjvalsfood)):
-      val = abs(self.n.activate((adjvalsfood[i], adjvalspred[i], adjvalsmarsh[i])))
-      if val > maxVal:
-        maxIdx = i
-        maxVal = val
-    print str(val) + " for " + str(adjvalsfood[i]) + ", " + str(adjvalspred[i]) + ", " + str(adjvalsmarsh[i])
-    return maxIdx
+    # Define the environment
+    #environment = BeaverEnv()
+
+    # Define the task
+    #task = BeaverTask(environment)
+
+    # Finally, define experiment
+   # experiment = Experiment(task, agent)
+

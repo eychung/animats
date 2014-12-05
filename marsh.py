@@ -2,6 +2,7 @@ import math
 import pygame
 import random
 from pygame.locals import *
+from constants import Constants
 from resources import Resources
 
 MIN_HEALTH = 10
@@ -33,6 +34,17 @@ class Marsh(pygame.sprite.Sprite):
     self.fullsize = newsize
     self.scale = 1
     self.updatemodcounter = 0
+
+  def gethealth(self):
+    return self.health
+
+  def gethealthlevel(self):
+    if self.health < 30:
+      return Constants.BEAVER_STATE_MARSH_HEALTH_LOW
+    elif self.health < 70:
+      return Constants.BEAVER_STATE_MARSH_HEALTH_MED
+    else:
+      return Constants.BEAVER_STATE_MARSH_HEALTH_HIGH
 
   def updatehealth(self):
     self.health -= 0.025

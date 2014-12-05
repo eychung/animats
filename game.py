@@ -57,10 +57,7 @@ class Game:
 
     if (self.beaver.energy <= 0 or
       self.beaver.rect.colliderect(self.wolf.rect)):
-      self.beaver.kill()
-      self.beaver = None
-      self.beaver = Beaver()
-      self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
+      self.beaver.respawn()
 
       # Reset the wolf so that it seems as if time has passed
       # (aka wolf not lurking around marsh on beaver spawn)
@@ -74,10 +71,10 @@ class Game:
         self.terrain.gettreelist())
       if tree is not None and not isinstance(tree, Marsh):
         # Check beaver state
-        if self.beaver.state == Beaver.CONST_STATE_EAT:
+        if self.beaver.action == Beaver.CONST_ACTION_EAT:
           tree.setstate(Tree.CONST_STATE_ATE)
           tree.update()
-        elif self.beaver.state == Beaver.CONST_STATE_FORAGE:
+        elif self.beaver.action == Beaver.CONST_ACTION_FORAGE:
           tree.setstate(Tree.CONST_STATE_FORAGED)
           tree.update()
 
@@ -85,7 +82,7 @@ class Game:
         if tree.health <= 0:
           tree.kill()
           tree = None
-          self.beaver.setstate(Beaver.CONST_STATE_WALK)
+          self.beaver.setaction(Beaver.CONST_ACTION_WALK)
 
   def on_render(self):
     self.background.fill(BG_COLOR)
