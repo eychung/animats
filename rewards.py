@@ -26,7 +26,7 @@ for beaver_state in state_type_weights[0].iteritems():
 
           for env_wolf_state in state_type_weights[5].iteritems():
             for action in action_weights.iteritems():
-              full_state = "%s,%s,%s,%s,%s,%s,%s" % (
+              full_state = (
                 beaver_state[0], marsh_state[0], lumber_state[0],
                 env_tree_state[0], env_marsh_state[0], env_wolf_state[0],
                 action[0])
