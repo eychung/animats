@@ -44,8 +44,13 @@ for beaver_state in state_type_weights[0].iteritems():
                   env_tree_state[1] * env_marsh_state[1] * env_wolf_state[1] *
                   action[1])
 
+index_to_state = sorted(rewards.keys())
+state_to_index = {state: index for index, state in enumerate(index_to_state)}
+
 import pickle
 pickle.dump(rewards, open('rewards.p', 'wb'))
+pickle.dump(index_to_state, open('index_to_state.p', 'wb'))
+pickle.dump(state_to_index, open('state_to_index.p', 'wb'))
 
 # import csv
 # writer = csv.writer(open('rewards.csv', 'wb'))
