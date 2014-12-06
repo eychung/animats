@@ -14,10 +14,10 @@ class BeaverEnv(Environment):
   return [float(index[1]), ]
   """
   def getSensors(self):
-    return [float(Constants.state_to_index[tuple(self.beaver.states)])]
+    return [float(Constants.STATE_TO_INDEX[tuple(self.beaver.states)])]
 
   def performAction(self, action):
-    pass
+    self.beaver.performaction(action)
 
   def reset(self):
     # Most environments will implement this optional method that allows for
