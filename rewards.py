@@ -14,6 +14,7 @@ with open("state_weights.txt", 'r') as wfile:
       weight = float(weight)
       weights[state] = weight
 
+only_states = []
 rewards = {}
 for beaver_state in state_type_weights[0].iteritems():
   for marsh_state in state_type_weights[1].iteritems():
@@ -21,6 +22,11 @@ for beaver_state in state_type_weights[0].iteritems():
       for env_tree_state in state_type_weights[3].iteritems():
         for env_marsh_state in state_type_weights[4].iteritems():
           for env_wolf_state in state_type_weights[5].iteritems():
+            only_state = (
+              beaver_state[0], marsh_state[0], lumber_state[0],
+              env_tree_state[0], env_marsh_state[0], env_wolf_state[0])
+            only_states.append(only_state)
+
             for action in action_weights.iteritems():
               full_state = (
                 beaver_state[0], marsh_state[0], lumber_state[0],
@@ -40,7 +46,7 @@ for beaver_state in state_type_weights[0].iteritems():
                   env_tree_state[1] * env_marsh_state[1] * env_wolf_state[1] *
                   action[1])
 
-index_to_state = sorted(rewards.keys())
+index_to_state = sorted(only_states)
 state_to_index = {state: index for index, state in enumerate(index_to_state)}
 
 import pickle

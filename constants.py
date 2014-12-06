@@ -1,3 +1,5 @@
+import pickle
+
 class Constants:
   NUM_STATES = 432 # 4*3*2*3*3*2
   NUM_ACTIONS = 5
@@ -33,3 +35,7 @@ class Constants:
   BEAVER_STATE_NONE_MARSH = "none marsh"
   BEAVER_STATE_SEE_WOLF = "see wolf"
   BEAVER_STATE_NONE_WOLF = "none wolf"
+
+  REWARDS = pickle.load(open('rewards.p', 'rb'))
+  STATE_TO_INDEX = pickle.load(open('state_to_index.p', 'rb'))
+  INDEX_TO_STATE = pickle.load(open('index_to_state.p', 'rb'))
