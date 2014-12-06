@@ -20,7 +20,7 @@ class Brain:
     # Define Q-learning agent where alpha is 0.5 and gamma is 0.0
     learner = Q(0.5, 0.0)
     #learner._setExplorer(EpsilonGreedyExplorer(0.0))
-    agent = LearningAgent(controller, learner)
+    self.agent = LearningAgent(controller, learner)
 
     # Define the environment
     #environment = BeaverEnv()
@@ -30,6 +30,12 @@ class Brain:
 
     # Finally, define experiment
     #experiment = Experiment(task, agent)
+
+  def interact(self):
+    #self.experiment.doInteractions(1)
+    #self.agent.learn()
+    #self.agent.reset()
+    pass
 
   def getstates(self):
     return self.states
