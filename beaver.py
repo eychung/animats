@@ -13,8 +13,8 @@ class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
   Returns: beaver object
   Functions: update, calcnewpos
-  Attributes: action, adjlist, energy, energybar, eyeview, inwater, rect, scentview,
-    states, stepsize
+  Attributes: action, adjlist, energy, energybar, eyeview, haslumber, inwater, rect,
+    scentview, states, stepsize
   """
 
   CONST_VIEW_DIST = 100
@@ -25,6 +25,15 @@ class Beaver(pygame.sprite.Sprite):
   CONST_ACTION_WALK = 0
   CONST_ACTION_EAT = 1
   CONST_ACTION_FORAGE = 2
+
+  CONST_LUMBER_WEIGHT = 2
+
+  CONST_ENERGY_IDLE_COST = 0.1
+  CONST_ENERGY_WALK_LAND_COST = 0.5
+  CONST_ENERGY_WALK_WATER_COST = 0.25
+  CONST_ENERGY_EAT_GAIN = 0.5
+  CONST_ENERGY_PICK_UP_LUMBER_COST = 0.25
+  # No cost in dropping lumber
 
   def __init__(self):
     self.reset()
@@ -48,6 +57,7 @@ class Beaver(pygame.sprite.Sprite):
     self.energy = 100
     self.energybar = self.rect.width
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
+    self.haslumber = False
     self.inwater = True # Beaver spawns in marsh
     self.scentview = [] # Contains knowledge of nearby wolf by scent
     self.states = [Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH,
@@ -153,7 +163,6 @@ class Beaver(pygame.sprite.Sprite):
         shortestdist = sorted(treedisttuple, key=itemgetter(1))[0][1]
         normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2) +
           math.sqrt(pow(treeinfo[0].rect.width, 2) + pow(treeinfo[0].rect.height, 2)))
-        #normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
     return adjvals
 
@@ -167,7 +176,6 @@ class Beaver(pygame.sprite.Sprite):
         shortestdist = sorted(scentdisttuple, key=itemgetter(1))[0][1]
         normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
-
     return adjvals
 
   def calcadjvalsmarsh(self):
@@ -179,10 +187,12 @@ class Beaver(pygame.sprite.Sprite):
           marshdisttuple = [(sprite,
             Resources.calcdistance(marshpoint, point))]
           shortestdist = sorted(marshdisttuple, key=itemgetter(1))[0][1]
+          # TODO: May have to tweak this normalized distance
           normalizeddist = shortestdist/(self.CONST_VIEW_DIST * math.sqrt(2))
           adjvals.append(1 - normalizeddist)
     return adjvals
 
+  # Obsolete method used for NN
   def calcnewpos(self, rect):
     if self.action == self.CONST_ACTION_WALK:
       self.setadjpoints()
@@ -213,16 +223,112 @@ class Beaver(pygame.sprite.Sprite):
     else: # CONST_STATE_EAT or CONST_STATE_FORAGE
       return self.rect # Don't move
 
+  # Use this method only if knows there is a tree nearby and not at tree already
+  # If violation of rules when method called, beaver doesn't move and still lose energy.
+  def performactionmovetotree(self):
+    self.setadjpoints()
+    adjvalsfood = self.calcadjvalsfood()
+    if (self.gettreeview(self.eyeview) and
+      self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
+      print "performactionmovetotree: already at tree!"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
+      return self.rect
+    elif adjvalsfood:
+      moveto = self.adjpoints[adjvalsfood.index(max(adjvalsfood))]
+      offsetx = moveto[0] - self.rect.width/2 - self.rect.x
+      offsety = moveto[1] - self.rect.height/2 - self.rect.y
+      if self.haslumber:
+        if self.inwater:
+          self.energy -= (Beaver.CONST_ENERGY_WALK_WATER_COST *
+            Beaver.CONST_LUMBER_WEIGHT)
+        else:
+          self.energy -= (Beaver.CONST_ENERGY_WALK_LAND_COST *
+            Beaver.CONST_LUMBER_WEIGHT)
+      else:
+        if self.inwater:
+          self.energy -= Beaver.CONST_ENERGY_WALK_WATER_COST
+        else:
+          self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST
+      return rect.move(offsetx, offsety)
+    else:
+      print "performactionmovetotree: no trees in sight - unable to move to nearest tree"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
+      return self.rect
+
+  # Use this method only if knows there is a marsh nearby and not in marsh already
+  # If violation of rules when method called, beaver doesn't move and still loses energy.
+  def performactionmovetomarsh(self):
+    self.setadjpoints()
+    adjvalsmarsh = self.calcadjvalsmarsh()
+    if self.inwater:
+      print "performactionmovetomarsh: already on marsh!"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
+      return self.rect
+    elif adjvalsmarsh:
+      moveto = self.adjpoints[adjvalsmarsh.index(max(adjvalsmarsh))]
+      offsetx = moveto[0] - self.rect.width/2 - self.rect.x
+      offsety = moveto[1] - self.rect.height/2 - self.rect.y
+      if self.haslumber:
+        self.energy -= (Beaver.CONST_ENERGY_WALK_LAND_COST *
+          Beaver.CONST_LUMBER_WEIGHT)
+      else:
+        self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST # Moving on land
+      return rect.move(offsetx, offsety)
+    else:
+      print "performactionmovetomarsh: no marsh in sight - unable to move to marsh"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
+      return self.rect
+
+  # Use this method only if beaver is at a tree
+  def performactioneat(self):
+    if (self.gettreeview(self.eyeview) and
+      self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
+      self.energy += Beaver.CONST_ENERGY_EAT_GAIN
+      return self.rect
+    else:
+      print "performactioneat: not at tree - cannot eat"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
+      return self.rect
+
+  def performactionpickuplumber(self):
+    if (self.gettreeview(self.eyeview) and
+      self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
+      self.haslumber = True
+      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
+      return self.rect
+    else:
+      print "performactionpickuplumber: not at tree - cannot pick up lumber"
+      return self.rect
+
+  # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
+  def performactiondroplumber(self):
+    self.haslumber = False
+    return self.rect
+
   def updateenergy(self):
+    if self.energy == 0:
+      self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
+        Constants.BEAVER_STATE_BEAVER_ENERGY_ZERO)
+    elif self.energy < 30:
+      self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
+        Constants.BEAVER_STATE_BEAVER_ENERGY_LOW)
+    elif self.energy < 70:
+      self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
+        Constants.BEAVER_STATE_BEAVER_ENERGY_MED)
+    else:
+      self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
+        Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH)
+
+  def updateenergynobrain(self):
     if self.action == self.CONST_ACTION_WALK:
       if self.inwater:
-        self.energy -= 0.025
+        self.energy -= Beaver.CONST_ENERGY_WALK_WATER_COST
       else:
-        self.energy -= 0.5
+        self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST
     elif self.action == self.CONST_ACTION_EAT:
-      self.energy += .1
+      self.energy += Beaver.CONST_ENERGY_EAT_GAIN
     elif self.action == self.CONST_ACTION_FORAGE:
-      self.energy -= .1
+      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
 
     # Set beaver energy state
     if self.energy == 0:
@@ -276,8 +382,17 @@ class Beaver(pygame.sprite.Sprite):
 
     # Second, update terrain type response
     self.updateterraintyperesponse()
-
-    self.updateenergy()
+ 
+    # No brain movement
     newpos = self.calcnewpos(self.rect)
     self.rect = newpos
+    self.updateenergynobrain()
+
+    # Brain movement
+    # perform action, then update energy
+
+    self.brain.setstates(self.states)
+    print self.states
+
+# TODO: It is actually observed that beavers can eat trees while in marsh
 
