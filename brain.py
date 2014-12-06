@@ -6,7 +6,7 @@ from pybrain.rl.environments import Task
 from pybrain.rl.explorers import EpsilonGreedyExplorer
 from beaver_env import BeaverEnv
 from beaver_task import BeaverTask
-from constants import Constants
+from derived_constants import DerivedConstants
 from parameters import AgentParameters
 
 INITIAL_ACTION_VALUE_TABLE_VALUE = AgentParameters.INITIAL_ACTION_VALUE_TABLE_VALUE
@@ -18,7 +18,8 @@ class Brain:
     self.interactionscount = 0
 
     # Define action-value table
-    controller = ActionValueTable(Constants.NUM_STATES, Constants.NUM_ACTIONS)
+    controller = ActionValueTable(DerivedConstants.NUM_STATES,
+                                  DerivedConstants.NUM_ACTIONS)
     controller.initialize(INITIAL_ACTION_VALUE_TABLE_VALUE)
 
     # Define Q-learning agent

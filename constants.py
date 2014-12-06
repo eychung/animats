@@ -1,9 +1,4 @@
-import pickle
-
 class Constants:
-  NUM_STATES = 432 # 4*3*2*3*3*2
-  NUM_ACTIONS = 5
-
   # Beaver
   BEAVER_STATE_INDEX_BEAVER_ENERGY = 0
   BEAVER_STATE_INDEX_MARSH_HEALTH = 1
@@ -46,8 +41,3 @@ class Constants:
   TREE_STATE_IDLE = 0
   TREE_STATE_ATE = 1
   TREE_STATE_FORAGED = 2
-
-  # Mappings
-  REWARDS = pickle.load(open('rewards.p', 'rb'))
-  STATE_TO_INDEX = pickle.load(open('state_to_index.p', 'rb'))
-  INDEX_TO_STATE = pickle.load(open('index_to_state.p', 'rb'))

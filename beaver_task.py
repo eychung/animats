@@ -1,5 +1,5 @@
 from pybrain.rl.environments.task import Task
-from constants import Constants
+from derived_constants import DerivedConstants
 
 class BeaverTask(Task):
   def __init__(self, environment):
@@ -15,12 +15,12 @@ class BeaverTask(Task):
     return sensors
 
   def getReward(self):
-    return Constants.REWARDS[tuple(self.env.beaver.states + [self.env.beaver.action])]
+    return DerivedConstants.REWARDS[tuple(self.env.beaver.states + [self.env.beaver.action])]
 
   @property
   def indim(self):
-    return Constants.NUM_ACTIONS
+    return DerivedConstants.NUM_ACTIONS
 
   @property
   def outdim(self):
-    return Constants.NUM_STATES
+    return DerivedConstants.NUM_STATES
