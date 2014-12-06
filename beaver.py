@@ -294,6 +294,8 @@ class Beaver(pygame.sprite.Sprite):
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.haslumber = True
+      self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
+        Constants.BEAVER_STATE_HAS_LUMBER)
       self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
       return self.rect
     else:
@@ -303,6 +305,8 @@ class Beaver(pygame.sprite.Sprite):
   # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
   def performactiondroplumber(self):
     self.haslumber = False
+    self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
+      Constants.BEAVER_STATE_NO_LUMBER)
     return self.rect
 
   def updateenergy(self):

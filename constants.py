@@ -1,5 +1,5 @@
 class Constants:
-  NUM_STATES = 384
+  NUM_STATES = 432 # 4*3*2*3*3*2
   NUM_ACTIONS = 5
 
   # Beaver

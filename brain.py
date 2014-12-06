@@ -15,7 +15,7 @@ class Brain:
 
     # Define action-value table
     controller = ActionValueTable(Constants.NUM_STATES, Constants.NUM_ACTIONS)
-    controller.initialize(1.)
+    controller.initialize(0.)
 
     # Define Q-learning agent where alpha is 0.5 and gamma is 0.0
     learner = Q(0.5, 0.0)
