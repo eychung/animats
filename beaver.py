@@ -244,7 +244,7 @@ class Beaver(pygame.sprite.Sprite):
           self.energy -= Beaver.CONST_ENERGY_WALK_WATER_COST
         else:
           self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST
-      return rect.move(offsetx, offsety)
+      return self.rect.move(offsetx, offsety)
     else:
       print "performactionmovetotree: no trees in sight - unable to move to nearest tree"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
@@ -269,7 +269,7 @@ class Beaver(pygame.sprite.Sprite):
           Beaver.CONST_LUMBER_WEIGHT)
       else:
         self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST # Moving on land
-      return rect.move(offsetx, offsety)
+      return self.rect.move(offsetx, offsety)
     else:
       print "performactionmovetomarsh: no marsh in sight - unable to move to marsh"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
@@ -309,19 +309,20 @@ class Beaver(pygame.sprite.Sprite):
     return self.rect
 
   def performaction(self, action):
+    action = int(action)
     print "performing an action"
-    if action == Constants.BEAVER_ACTION_MOVE_TREE:
+    if action == Constants.BEAVER_ACTION_INDEX_MOVE_TREE:
       self.performactionmovetotree()
-    elif action == Constants.BEAVER_ACTION_MOVE_MARSH:
+    elif action == Constants.BEAVER_ACTION_INDEX_MOVE_MARSH:
       self.performactionmovetomarsh()
-    elif action == Constants.BEAVER_ACTION_EAT:
+    elif action == Constants.BEAVER_ACTION_INDEX_EAT:
       self.performactioneat()
-    elif action == Constants.BEAVER_ACTION_PICK_UP_LUMBER:
+    elif action == Constants.BEAVER_ACTION_INDEX_PICK_UP_LUMBER:
       self.performactionpickuplumber()
-    elif action == Constants.BEAVER_ACTION_DROP_LUMBER:
+    elif action == Constants.BEAVER_ACTION_INDEX_DROP_LUMBER:
       self.performactiondroplumber()
     else:
-      print "Invalid action index"
+      print "Invalid action index: " + str(action)
 
   def updateenergy(self):
     if self.energy == 0:

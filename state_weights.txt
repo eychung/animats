@@ -21,8 +21,8 @@ break
 see wolf,0.05
 none wolf,0.7
 action
-move towards tree,0.9
-move towards marsh,0.5
+move to tree,0.9
+move to marsh,0.5
 eat,1.0
 pick up lumber,0.5
 drop lumber,0.5
