@@ -5,7 +5,6 @@ class BeaverTask(Task):
   def __init__(self, environment):
     # All tasks are coupled to an environment
     self.env = environment
-    self.lastreward = 0
 
   def performAction(self, action):
     self.env.performAction(action)

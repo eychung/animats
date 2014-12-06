@@ -42,6 +42,12 @@ class Constants:
   BEAVER_ACTION_PICK_UP_LUMBER = "pick up lumber"
   BEAVER_ACTION_DROP_LUMBER = "drop lumber"
 
+  # Tree
+  TREE_STATE_IDLE = 0
+  TREE_STATE_ATE = 1
+  TREE_STATE_FORAGED = 2
+
+  # Mappings
   REWARDS = pickle.load(open('rewards.p', 'rb'))
   STATE_TO_INDEX = pickle.load(open('state_to_index.p', 'rb'))
   INDEX_TO_STATE = pickle.load(open('index_to_state.p', 'rb'))

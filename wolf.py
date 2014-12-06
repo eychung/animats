@@ -4,15 +4,16 @@ import random
 from pygame.locals import *
 from marsh import Marsh
 from resources import Resources
+from parameters import WolfParameters
+
+CONST_VIEW_DIST = WolfParameters.CONST_VIEW_DIST
+CONST_SCENT_DIST = WolfParameters.CONST_SCENT_DIST
+CONST_STEP_SIZE = WolfParameters.CONST_STEP_SIZE
 
 class Wolf(pygame.sprite.Sprite):
   """A wolf that preys on beavers
   Attributes: adjpoints, eyeview, rect, scentview, stepsize
   """
-
-  CONST_VIEW_DIST = 100
-  CONST_SCENT_DIST = 200
-  CONST_STEP_SIZE = 2
 
   def __init__(self):
     self.respawn()
@@ -36,7 +37,7 @@ class Wolf(pygame.sprite.Sprite):
 
     self.eyeview = []
     self.scentview = []
-    self.stepsize = self.CONST_STEP_SIZE
+    self.stepsize = CONST_STEP_SIZE
 
     # Top left, top, top right, left, right, bottom left, bottom, bottom right
     self.setadjpoints()
@@ -64,18 +65,18 @@ class Wolf(pygame.sprite.Sprite):
     self.stepsize = stepsize
 
   def seteyeview(self, terrain):
-    x = self.rect.centerx - self.CONST_VIEW_DIST
-    y = self.rect.centery - self.CONST_VIEW_DIST
-    eyeviewrect = Rect(x, y, self.CONST_VIEW_DIST*2, self.CONST_VIEW_DIST*2)
+    x = self.rect.centerx - CONST_VIEW_DIST
+    y = self.rect.centery - CONST_VIEW_DIST
+    eyeviewrect = Rect(x, y, CONST_VIEW_DIST*2, CONST_VIEW_DIST*2)
     self.eyeview = []
     for sprite in terrain:
       if isinstance(sprite, Marsh) and eyeviewrect.colliderect(sprite.rect):
         self.eyeview.append(sprite)
 
   def setscentview(self, beaver):
-    x = self.rect.centerx - self.CONST_SCENT_DIST
-    y = self.rect.centery - self.CONST_SCENT_DIST
-    scentviewrect = Rect(x, y, self.CONST_SCENT_DIST*2, self.CONST_SCENT_DIST*2)
+    x = self.rect.centerx - CONST_SCENT_DIST
+    y = self.rect.centery - CONST_SCENT_DIST
+    scentviewrect = Rect(x, y, CONST_SCENT_DIST*2, CONST_SCENT_DIST*2)
     self.scentview = []
     if scentviewrect.colliderect(beaver.rect):
       self.scentview.append(beaver)
@@ -86,7 +87,7 @@ class Wolf(pygame.sprite.Sprite):
     if self.scentview:
       for point in self.adjpoints:
         shortestdist = Resources.calcdistance(point, self.scentview[0].rect.center)
-        normalizeddist = shortestdist/(self.CONST_SCENT_DIST * math.sqrt(2))
+        normalizeddist = shortestdist/(CONST_SCENT_DIST * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
     return adjvals
 

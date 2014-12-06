@@ -2,8 +2,9 @@ import pygame
 from pygame.locals import *
 from marsh import Marsh
 from tree import Tree
+from parameters import TerrainParameters
 
-initnumtrees = 50
+MAX_NUM_TREES = TerrainParameters.MAX_NUM_TREES
 
 class Terrain:
   def __init__(self):
@@ -14,7 +15,7 @@ class Terrain:
     self.terraingroup.add(Marsh())
 
     # Add initnumtrees or less trees
-    for num in range(initnumtrees):
+    for num in range(MAX_NUM_TREES):
       tree = Tree()
       if pygame.sprite.spritecollideany(tree, self.terraingroup) is None:
         self.terraingroup.add(tree)

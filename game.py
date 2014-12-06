@@ -3,19 +3,26 @@ from pygame.locals import *
 from beaver import Beaver
 from brain import Brain
 from constants import Constants
+from parameters import GameParameters
 from marsh import Marsh
 from terrain import Terrain
 from tree import Tree
 from wolf import Wolf
 
-BG_COLOR = (0, 92, 9)
-HEALTHBAR_COLOR = (0, 255, 0)
+BG_COLOR = GameParameters.BG_COLOR
+HEALTHBAR_COLOR = GameParameters.HEALTHBAR_COLOR
+HEALTHBAR_HEIGHT = GameParameters.HEALTHBAR_HEIGHT
+
+SCREEN_WIDTH = GameParameters.SCREEN_WIDTH
+SCREEN_HEIGHT = GameParameters.SCREEN_HEIGHT
+
+FRAMERATE = GameParameters.FRAMERATE
 
 class Game:
   def __init__(self):
     self._running = True
     self.screen = None
-    self.size = self.weight, self.height = 640, 400
+    self.size = self.width, self.height = SCREEN_WIDTH, SCREEN_HEIGHT
 
   def on_init(self):
     pygame.init()
@@ -84,10 +91,10 @@ class Game:
       if tree is not None and not isinstance(tree, Marsh):
         # Check beaver state
         if self.beaver.action == Constants.BEAVER_ACTION_EAT:
-          tree.setstate(Tree.CONST_STATE_ATE)
+          tree.setstate(Constants.TREE_STATE_ATE)
           tree.update()
         elif self.beaver.action == Constants.BEAVER_ACTION_PICK_UP_LUMBER:
-          tree.setstate(Tree.CONST_STATE_FORAGED)
+          tree.setstate(Constants.TREE_STATE_FORAGED)
           tree.update()
 
         # Check tree state
@@ -113,17 +120,17 @@ class Game:
 
     # Draws energy and health bars of beaver and trees
     bx, by = self.beaver.rect.topleft
-    brect = pygame.Rect(bx, by, self.beaver.energybar, 5)
+    brect = pygame.Rect(bx, by, self.beaver.energybar, HEALTHBAR_HEIGHT)
     pygame.draw.rect(self.screen, HEALTHBAR_COLOR, brect, 0)
 
     for sprite in self.terrain.terraingroup:
       sx, sy = sprite.rect.topleft
-      srect = pygame.Rect(sx, sy, sprite.healthbar, 5)
+      srect = pygame.Rect(sx, sy, sprite.healthbar, HEALTHBAR_HEIGHT)
       pygame.draw.rect(self.screen, HEALTHBAR_COLOR, srect, 0)
 
     # Inefficient but works w/o hacking up a blit function for transparent imgs
     pygame.display.update()
-    self._clock.tick(60)
+    self._clock.tick(FRAMERATE)
 
   def on_cleanup(self):
     pygame.quit()

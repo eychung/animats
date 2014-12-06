@@ -1,3 +1,5 @@
+from constants import Constants
+
 weights = {}
 state_type_weights = [weights]
 action_weights = {}
@@ -33,12 +35,12 @@ for beaver_state in state_type_weights[0].iteritems():
                 env_tree_state[0], env_marsh_state[0], env_wolf_state[0],
                 action[0])
 
-              if ((action[0] == "eat" and env_tree_state[0] != "at tree") or
-                 (action[0] == "pick up lumber" and env_tree_state[0] != "at tree") or
-                 (action[0] == "pick up lumber" and lumber_state[0] != "has lumber") or
-                 (action[0] == "drop lumber" and lumber_state[0] != "has lumber") or
-                 (action[0] == "move towards tree" and env_tree_state[0] != "see tree") or
-                 (action[0] == "move towards marsh" and env_marsh_state[0] != "see marsh")):
+              if ((action[0] == Constants.BEAVER_ACTION_EAT and env_tree_state[0] != Constants.BEAVER_STATE_AT_TREE) or
+                 (action[0] == Constants.BEAVER_ACTION_PICK_UP_LUMBER and env_tree_state[0] != Constants.BEAVER_STATE_AT_TREE) or
+                 (action[0] == Constants.BEAVER_ACTION_PICK_UP_LUMBER and lumber_state[0] != Constants.BEAVER_STATE_HAS_LUMBER) or
+                 (action[0] == Constants.BEAVER_ACTION_DROP_LUMBER and lumber_state[0] != Constants.BEAVER_STATE_HAS_LUMBER) or
+                 (action[0] == Constants.BEAVER_ACTION_MOVE_TREE and env_tree_state[0] != Constants.BEAVER_STATE_SEE_TREE) or
+                 (action[0] == Constants.BEAVER_ACTION_MOVE_MARSH and env_marsh_state[0] != Constants.BEAVER_STATE_SEE_MARSH)):
                  rewards[full_state] = 0
               else:
                 rewards[full_state] = (

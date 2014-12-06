@@ -7,6 +7,11 @@ from pybrain.rl.explorers import EpsilonGreedyExplorer
 from beaver_env import BeaverEnv
 from beaver_task import BeaverTask
 from constants import Constants
+from parameters import AgentParameters
+
+INITIAL_ACTION_VALUE_TABLE_VALUE = AgentParameters.INITIAL_ACTION_VALUE_TABLE_VALUE
+ALPHA = AgentParameters.ALPHA
+GAMMA = AgentParameters.GAMMA
 
 class Brain:
   def __init__(self):
@@ -14,10 +19,10 @@ class Brain:
 
     # Define action-value table
     controller = ActionValueTable(Constants.NUM_STATES, Constants.NUM_ACTIONS)
-    controller.initialize(0.)
+    controller.initialize(INITIAL_ACTION_VALUE_TABLE_VALUE)
 
-    # Define Q-learning agent where alpha is 0.5 and gamma is 0.0
-    learner = Q(0.5, 0.0)
+    # Define Q-learning agent
+    learner = Q(ALPHA, GAMMA)
     #learner._setExplorer(EpsilonGreedyExplorer(0.0))
     self.agent = LearningAgent(controller, learner)
 
