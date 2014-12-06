@@ -69,10 +69,7 @@ class Game:
 
       # Reset the wolf so that it seems as if time has passed
       # (aka wolf not lurking around marsh on beaver spawn)
-      self.wolf.kill()
-      self.wolf = None
-      self.wolf = Wolf()
-      self.wolfsprite = pygame.sprite.RenderPlain(self.wolf)
+      self.wolf.respawn()
 
     else:
       tree = pygame.sprite.spritecollideany(self.beaver,
@@ -88,10 +85,7 @@ class Game:
 
         # Check tree state
         if tree.health <= 0:
-          tree.kill()
-          tree = None
-          # TODO: To be removed when brain is implemented
-          self.beaver.setaction(Constants.BEAVER_ACTION_MOVE_TREE)
+          tree.respawn()
 
   def on_render(self):
     self.background.fill(BG_COLOR)

@@ -16,6 +16,9 @@ class Tree(pygame.sprite.Sprite):
   CONST_STATE_FORAGED = 2
 
   def __init__(self):
+    self.respawn()
+
+  def respawn(self):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('tree.png')
 

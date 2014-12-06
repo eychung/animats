@@ -15,6 +15,9 @@ class Wolf(pygame.sprite.Sprite):
   CONST_STEP_SIZE = 2
 
   def __init__(self):
+    self.respawn()
+
+  def respawn(self):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('wolf.png')
     originalsize = self.image.get_size()
