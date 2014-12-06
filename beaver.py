@@ -291,12 +291,16 @@ class Beaver(pygame.sprite.Sprite):
 
   def performactionpickuplumber(self):
     self.setaction(Constants.BEAVER_ACTION_PICK_UP_LUMBER)
-    if (self.gettreeview(self.eyeview) and
-      self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
+    if (not self.haslumber and
+        self.gettreeview(self.eyeview) and
+        self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.haslumber = True
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_HAS_LUMBER)
       self.energy -= CONST_ENERGY_PICK_UP_LUMBER_COST
+    elif self.haslumber:
+      print "performactionpickuplumber: has lumber - cannot pick up lumber"
+      self.energy -= CONST_ENERGY_IDLE_COST
     else:
       print "performactionpickuplumber: not at tree - cannot pick up lumber"
       self.energy -= CONST_ENERGY_IDLE_COST
