@@ -20,10 +20,6 @@ for beaver_state in state_type_weights[0].iteritems():
     for lumber_state in state_type_weights[2].iteritems():
       for env_tree_state in state_type_weights[3].iteritems():
         for env_marsh_state in state_type_weights[4].iteritems():
-
-          if env_tree_state[0] == "at tree" and env_marsh_state[0] == "at marsh":
-            continue
-
           for env_wolf_state in state_type_weights[5].iteritems():
             for action in action_weights.iteritems():
               full_state = (
