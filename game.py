@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from beaver import Beaver
+from brain import Brain
 from constants import Constants
 from marsh import Marsh
 from terrain import Terrain
@@ -33,6 +34,9 @@ class Game:
     self.beaver = Beaver()
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
 
+    self.brain = Brain()
+    self.brain.environment.setbeaver(self.beaver)
+
     self.wolf = Wolf()
     self.wolfsprite = pygame.sprite.RenderPlain(self.wolf)
 
@@ -50,7 +54,6 @@ class Game:
     self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)
     self.wolfsprite.update()
-
 
     marsh = self.terrain.getmarsh()
     if marsh is not None:

@@ -7,7 +7,6 @@ from constants import Constants
 from marsh import Marsh
 from resources import Resources
 from tree import Tree
-from brain import Brain
 
 class Beaver(pygame.sprite.Sprite):
   """A beaver that will move across the screen
@@ -33,7 +32,6 @@ class Beaver(pygame.sprite.Sprite):
 
   def __init__(self):
     self.reset()
-    self.brain = Brain()
 
   def reset(self):
     # Centers the beaver to spawn in the center of the marshes
@@ -410,9 +408,7 @@ class Beaver(pygame.sprite.Sprite):
 
     # Brain movement
     # perform action, then update energy
-    self.brain.setstates(self.states)
     print self.states
-    self.brain.interact()
 
 # TODO: It is actually observed that beavers can eat trees while in marsh
 
