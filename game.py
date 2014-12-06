@@ -48,12 +48,12 @@ class Game:
       self._running = False
 
   def on_loop(self):
+    self.beaver.seteyeview(self.terrain.terraingroup)
+    self.beaversprite.update()
+
     self.brain.experiment.doInteractions(1)
     self.brain.agent.learn()
     self.brain.agent.reset()
-
-    self.beaver.seteyeview(self.terrain.terraingroup)
-    self.beaversprite.update()
 
     self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)

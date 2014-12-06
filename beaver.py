@@ -23,7 +23,7 @@ class Beaver(pygame.sprite.Sprite):
 
   CONST_LUMBER_WEIGHT = 2
 
-  CONST_ENERGY_IDLE_COST = 0.1
+  CONST_ENERGY_IDLE_COST = 1
   CONST_ENERGY_WALK_LAND_COST = 0.5
   CONST_ENERGY_WALK_WATER_COST = 0.25
   CONST_ENERGY_EAT_GAIN = 0.5
@@ -324,6 +324,9 @@ class Beaver(pygame.sprite.Sprite):
     else:
       print "Invalid action index: " + str(action)
 
+    self.updateenergy()
+    print self.energy
+
   def updateenergy(self):
     if self.energy == 0:
       self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
@@ -337,6 +340,8 @@ class Beaver(pygame.sprite.Sprite):
     else:
       self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
         Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH)
+
+    self.energybar = self.rect.width * min(1, (self.energy/100.0))
 
   def updateenergynobrain(self):
     if self.action == Constants.BEAVER_ACTION_MOVE_TREE:
@@ -406,9 +411,6 @@ class Beaver(pygame.sprite.Sprite):
     newpos = self.calcnewpos(self.rect)
     self.rect = newpos
     self.updateenergynobrain()"""
-
-    # Brain movement
-    # perform action, then update energy
 
 # TODO: It is actually observed that beavers can eat trees while in marsh
 
