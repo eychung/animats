@@ -67,6 +67,7 @@ class Game:
     marsh = self.terrain.getmarsh()
     if marsh is not None:
       if (self.beaver.action == Constants.BEAVER_ACTION_DROP_LUMBER and
+          self.beaver.droppedlumber and
           pygame.sprite.collide_rect(self.beaver, marsh)):
         marsh.improve()
       marsh.update()

@@ -61,6 +61,7 @@ class Beaver(pygame.sprite.Sprite):
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
     self.haslumber = False
     self.pickeduplumber = False
+    self.droppedlumber = False
     self.inwater = True # Beaver spawns in marsh
     self.scentview = [] # Contains knowledge of nearby wolf by scent
     self.states = [Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH,
@@ -310,9 +311,11 @@ class Beaver(pygame.sprite.Sprite):
 
   # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
   def performactiondroplumber(self):
+    self.droppedlumber = False
     if self.haslumber:
       self.setaction(Constants.BEAVER_ACTION_DROP_LUMBER)
       self.haslumber = False
+      self.droppedlumber = True
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_NO_LUMBER)
     else:

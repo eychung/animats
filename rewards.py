@@ -37,7 +37,7 @@ for beaver_state in state_type_weights[0].iteritems():
 
               if ((action[0] == Constants.BEAVER_ACTION_EAT and env_tree_state[0] != Constants.BEAVER_STATE_AT_TREE) or
                  (action[0] == Constants.BEAVER_ACTION_PICK_UP_LUMBER and env_tree_state[0] != Constants.BEAVER_STATE_AT_TREE) or
-                 (action[0] == Constants.BEAVER_ACTION_PICK_UP_LUMBER and lumber_state[0] == Constants.BEAVER_STATE_HAS_LUMBER) or
+                 (action[0] == Constants.BEAVER_ACTION_PICK_UP_LUMBER and lumber_state[0] != Constants.BEAVER_STATE_NO_LUMBER) or
                  (action[0] == Constants.BEAVER_ACTION_DROP_LUMBER and lumber_state[0] != Constants.BEAVER_STATE_HAS_LUMBER) or
                  (action[0] == Constants.BEAVER_ACTION_MOVE_TREE and env_tree_state[0] != Constants.BEAVER_STATE_SEE_TREE) or
                  (action[0] == Constants.BEAVER_ACTION_MOVE_MARSH and env_marsh_state[0] != Constants.BEAVER_STATE_SEE_MARSH)):
