@@ -16,7 +16,7 @@ class Terrain:
     # Add initnumtrees or less trees
     for num in range(initnumtrees):
       tree = Tree()
-      while pygame.sprite.spritecollideany(tree, self.terraingroup) is None:
+      if pygame.sprite.spritecollideany(tree, self.terraingroup) is None:
         self.terraingroup.add(tree)
 
   def gettreelist(self):

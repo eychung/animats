@@ -39,7 +39,7 @@ class Beaver(pygame.sprite.Sprite):
     self.image, self.rect = Resources.load_png('beaver.png')
     originalsize = self.image.get_size()
     self.image = pygame.transform.scale(
-      self.image, (int(originalsize[0]/2), int(originalsize[1]/2))) 
+      self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
     self.rect = self.image.get_rect()
     newsize = self.image.get_size()
     screen = pygame.display.get_surface()
@@ -288,16 +288,21 @@ class Beaver(pygame.sprite.Sprite):
       self.haslumber = True
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_HAS_LUMBER)
-      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST 
+      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
     else:
       print "performactionpickuplumber: not at tree - cannot pick up lumber"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
 
   # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
   def performactiondroplumber(self):
-    self.setaction(Constants.BEAVER_ACTION_DROP_LUMBER)
-    self.haslumber = False
-    self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
-      Constants.BEAVER_STATE_NO_LUMBER)
+    if self.haslumber:
+      self.setaction(Constants.BEAVER_ACTION_DROP_LUMBER)
+      self.haslumber = False
+      self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
+        Constants.BEAVER_STATE_NO_LUMBER)
+    else:
+      print "performactiondroplumber: does not have lumber - cannot drop lumber"
+      self.energy -= Beaver.CONST_ENERGY_IDLE_COST
 
   def performaction(self, action):
     action = int(action)
@@ -395,7 +400,7 @@ class Beaver(pygame.sprite.Sprite):
 
     # Second, update terrain type response
     self.updateterraintyperesponse()
- 
+
     # No brain movement
     """if self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
       self.setaction(Constants.BEAVER_ACTION_EAT)

@@ -5,7 +5,8 @@ from pygame.locals import *
 from constants import Constants
 from resources import Resources
 
-MIN_HEALTH = 10
+MAX_HEALTH = 150
+MIN_HEALTH = 20
 
 class Marsh(pygame.sprite.Sprite):
   """A marsh
@@ -15,25 +16,30 @@ class Marsh(pygame.sprite.Sprite):
   """
 
   def __init__(self):
+    self.health = 50
+
+    self.updatemodcounter = 0
+    self.redraw()
+
+    self.healthbar = self.rect.width * min(1, (self.health/100.0))
+
+  def redraw(self):
     pygame.sprite.Sprite.__init__(self)
     self.image, self.rect = Resources.load_png('marsh.png')
 
-    # Scales and centers marsh
     originalsize = self.image.get_size()
+    self.fullsize = (int(originalsize[0]/2), int(originalsize[1]/2))
+
+    # scale image according to health
     self.image = pygame.transform.scale(
-      self.image, (int(originalsize[0]/2), int(originalsize[1]/2)))
+      self.image, (int((self.health/100.0) * self.fullsize[0]),
+                   int((self.health/100.0) * self.fullsize[1])))
     newsize = self.image.get_size()
     screen = pygame.display.get_surface()
     centerx = screen.get_width()/2 - newsize[0]/2
     centery = screen.get_height()/2 - newsize[1]/2
     self.rect = self.image.get_rect()
     self.rect.move_ip(centerx, centery)
-
-    self.health = 100
-    self.healthbar = self.rect.width / 2
-    self.fullsize = newsize
-    self.scale = 1
-    self.updatemodcounter = 0
 
   def gethealth(self):
     return self.health
@@ -46,30 +52,23 @@ class Marsh(pygame.sprite.Sprite):
     else:
       return Constants.BEAVER_STATE_MARSH_HEALTH_HIGH
 
-  def updatehealth(self):
-    self.health -= 0.025
+  def improve(self):
+    self.health += 10
+
+    if self.health > MAX_HEALTH:
+      self.health = MAX_HEALTH
+
     self.healthbar = self.rect.width * min(1, (self.health/100.0))
 
-    # reset marsh when health too low
-    if self.health <= MIN_HEALTH:
-      self = self.__init__()
+  def updatehealth(self):
+    self.health -= 0.025
 
-  def updateimagesize(self):
-    # only update the image every X steps, makes the image scale cleaner
-    imageupdate = self.updatemodcounter % 100
-    if imageupdate == 0:
-      # scale image according to health
-      self.image = pygame.transform.scale(
-        self.image, (int((self.health/100.0) * self.fullsize[0]),
-                     int((self.health/100.0) * self.fullsize[1])))
-      newsize = self.image.get_size()
-      screen = pygame.display.get_surface()
-      centerx = screen.get_width()/2 - newsize[0]/2
-      centery = screen.get_height()/2 - newsize[1]/2
-      self.rect = self.image.get_rect()
-      self.rect.move_ip(centerx, centery)
-    self.updatemodcounter = imageupdate + 1
+    # marsh cannot die
+    if self.health < MIN_HEALTH:
+      self.health = MIN_HEALTH
+
+    self.healthbar = self.rect.width * min(1, (self.health/100.0))
 
   def update(self):
     self.updatehealth()
-    self.updateimagesize()
+    self.redraw()
