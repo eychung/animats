@@ -23,7 +23,7 @@ class Beaver(pygame.sprite.Sprite):
 
   CONST_LUMBER_WEIGHT = 2
 
-  CONST_ENERGY_IDLE_COST = 1
+  CONST_ENERGY_IDLE_COST = .01
   CONST_ENERGY_WALK_LAND_COST = 0.5
   CONST_ENERGY_WALK_WATER_COST = 0.25
   CONST_ENERGY_EAT_GAIN = 0.5
@@ -227,7 +227,6 @@ class Beaver(pygame.sprite.Sprite):
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       print "performactionmovetotree: already at tree!"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
-      return self.rect
     elif adjvalsfood:
       moveto = self.adjpoints[adjvalsfood.index(max(adjvalsfood))]
       offsetx = moveto[0] - self.rect.width/2 - self.rect.x
@@ -244,11 +243,10 @@ class Beaver(pygame.sprite.Sprite):
           self.energy -= Beaver.CONST_ENERGY_WALK_WATER_COST
         else:
           self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST
-      return self.rect.move(offsetx, offsety)
+      self.rect = self.rect.move(offsetx, offsety)
     else:
       print "performactionmovetotree: no trees in sight - unable to move to nearest tree"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
-      return self.rect
 
   # Use this method only if knows there is a marsh nearby and not in marsh already
   # If violation of rules when method called, beaver doesn't move and still loses energy.
@@ -259,7 +257,6 @@ class Beaver(pygame.sprite.Sprite):
     if self.inwater:
       print "performactionmovetomarsh: already on marsh!"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
-      return self.rect
     elif adjvalsmarsh:
       moveto = self.adjpoints[adjvalsmarsh.index(max(adjvalsmarsh))]
       offsetx = moveto[0] - self.rect.width/2 - self.rect.x
@@ -269,11 +266,10 @@ class Beaver(pygame.sprite.Sprite):
           Beaver.CONST_LUMBER_WEIGHT)
       else:
         self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST # Moving on land
-      return self.rect.move(offsetx, offsety)
+      self.rect = self.rect.move(offsetx, offsety)
     else:
       print "performactionmovetomarsh: no marsh in sight - unable to move to marsh"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
-      return self.rect
 
   # Use this method only if beaver is at a tree
   def performactioneat(self):
@@ -281,11 +277,9 @@ class Beaver(pygame.sprite.Sprite):
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.energy += Beaver.CONST_ENERGY_EAT_GAIN
-      return self.rect
     else:
       print "performactioneat: not at tree - cannot eat"
       self.energy -= Beaver.CONST_ENERGY_IDLE_COST
-      return self.rect
 
   def performactionpickuplumber(self):
     self.setaction(Constants.BEAVER_ACTION_PICK_UP_LUMBER)
@@ -295,10 +289,8 @@ class Beaver(pygame.sprite.Sprite):
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_HAS_LUMBER)
       self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST 
-      return self.rect
     else:
       print "performactionpickuplumber: not at tree - cannot pick up lumber"
-      return self.rect
 
   # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
   def performactiondroplumber(self):
@@ -306,7 +298,6 @@ class Beaver(pygame.sprite.Sprite):
     self.haslumber = False
     self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
       Constants.BEAVER_STATE_NO_LUMBER)
-    return self.rect
 
   def performaction(self, action):
     action = int(action)
