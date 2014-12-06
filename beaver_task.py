@@ -16,8 +16,7 @@ class BeaverTask(Task):
     return sensors
 
   def getReward(self):
-    
-    pass
+    return Constants.REWARDS[tuple(self.env.beaver.states + [self.env.beaver.action])]
 
   @property
   def indim(self):
