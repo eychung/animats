@@ -1,4 +1,5 @@
 from pybrain.rl.environments.environment import Environment
+from constants import Constants
 
 class BeaverEnv(Environment):
   def __init__(self):
@@ -13,9 +14,9 @@ class BeaverEnv(Environment):
   return [float(index[1]), ]
   """
   def getSensors(self):
-    pass
+    return [float(Constants.state_to_index[tuple(self.beaver.states)])]
 
-  def performAction(self, action): 
+  def performAction(self, action):
     pass
 
   def reset(self):

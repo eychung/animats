@@ -11,7 +11,6 @@ from constants import Constants
 class Brain:
   def __init__(self):
     self.interactionscount = 0
-    self.states = []
 
     # Define action-value table
     controller = ActionValueTable(Constants.NUM_STATES, Constants.NUM_ACTIONS)
@@ -36,9 +35,3 @@ class Brain:
     #self.agent.learn()
     #self.agent.reset()
     pass
-
-  def getstates(self):
-    return self.states
-
-  def setstates(self, states):
-    self.states = states
