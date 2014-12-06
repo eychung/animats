@@ -52,8 +52,6 @@ class Game:
     self.beaversprite.update()
 
     self.brain.experiment.doInteractions(1)
-    self.brain.agent.learn()
-    self.brain.agent.reset()
 
     self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)
@@ -66,6 +64,8 @@ class Game:
     if (self.beaver.energy <= 0 or
       self.beaver.rect.colliderect(self.wolf.rect)):
       self.beaver.respawn()
+      self.brain.agent.learn()
+      self.brain.agent.reset()
 
       # Reset the wolf so that it seems as if time has passed
       # (aka wolf not lurking around marsh on beaver spawn)
