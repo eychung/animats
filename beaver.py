@@ -22,10 +22,6 @@ class Beaver(pygame.sprite.Sprite):
   CONST_STEP_SIZE_LAND = 1 # pixels
   CONST_STEP_SIZE_WATER = 4
 
-  CONST_ACTION_WALK = 0
-  CONST_ACTION_EAT = 1
-  CONST_ACTION_FORAGE = 2
-
   CONST_LUMBER_WEIGHT = 2
 
   CONST_ENERGY_IDLE_COST = 0.1
@@ -53,7 +49,7 @@ class Beaver(pygame.sprite.Sprite):
     centery = screen.get_height()/2 - newsize[1]/2
     self.rect.move_ip(centerx, centery)
 
-    self.action = self.CONST_ACTION_WALK
+    self.action = Constants.BEAVER_ACTION_MOVE_TREE
     self.energy = 100
     self.energybar = self.rect.width
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
@@ -194,7 +190,7 @@ class Beaver(pygame.sprite.Sprite):
 
   # Obsolete method used for NN
   def calcnewpos(self, rect):
-    if self.action == self.CONST_ACTION_WALK:
+    if self.action == Constants.BEAVER_ACTION_MOVE_TREE:
       self.setadjpoints()
       adjvalsfood = self.calcadjvalsfood()
       adjvalspred = self.calcadjvalspred()
@@ -226,6 +222,7 @@ class Beaver(pygame.sprite.Sprite):
   # Use this method only if knows there is a tree nearby and not at tree already
   # If violation of rules when method called, beaver doesn't move and still lose energy.
   def performactionmovetotree(self):
+    self.setaction(Constants.BEAVER_ACTION_MOVE_TREE)
     self.setadjpoints()
     adjvalsfood = self.calcadjvalsfood()
     if (self.gettreeview(self.eyeview) and
@@ -258,6 +255,7 @@ class Beaver(pygame.sprite.Sprite):
   # Use this method only if knows there is a marsh nearby and not in marsh already
   # If violation of rules when method called, beaver doesn't move and still loses energy.
   def performactionmovetomarsh(self):
+    self.setaction(Constants.BEAVER_ACTION_MOVE_MARSH)
     self.setadjpoints()
     adjvalsmarsh = self.calcadjvalsmarsh()
     if self.inwater:
@@ -281,6 +279,7 @@ class Beaver(pygame.sprite.Sprite):
 
   # Use this method only if beaver is at a tree
   def performactioneat(self):
+    self.setaction(Constants.BEAVER_ACTION_EAT)
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.energy += Beaver.CONST_ENERGY_EAT_GAIN
@@ -291,12 +290,13 @@ class Beaver(pygame.sprite.Sprite):
       return self.rect
 
   def performactionpickuplumber(self):
+    self.setaction(Constants.BEAVER_ACTION_PICK_UP_LUMBER)
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.haslumber = True
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_HAS_LUMBER)
-      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
+      self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST 
       return self.rect
     else:
       print "performactionpickuplumber: not at tree - cannot pick up lumber"
@@ -304,6 +304,7 @@ class Beaver(pygame.sprite.Sprite):
 
   # Can drop lumber anywhere resulting in 0 energy change; doesn't have to be in marsh to drop it
   def performactiondroplumber(self):
+    self.setaction(Constants.BEAVER_ACTION_DROP_LUMBER)
     self.haslumber = False
     self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
       Constants.BEAVER_STATE_NO_LUMBER)
@@ -338,14 +339,14 @@ class Beaver(pygame.sprite.Sprite):
         Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH)
 
   def updateenergynobrain(self):
-    if self.action == self.CONST_ACTION_WALK:
+    if self.action == Constants.BEAVER_ACTION_MOVE_TREE:
       if self.inwater:
         self.energy -= Beaver.CONST_ENERGY_WALK_WATER_COST
       else:
         self.energy -= Beaver.CONST_ENERGY_WALK_LAND_COST
-    elif self.action == self.CONST_ACTION_EAT:
+    elif self.action == Constants.BEAVER_ACTION_EAT:
       self.energy += Beaver.CONST_ENERGY_EAT_GAIN
-    elif self.action == self.CONST_ACTION_FORAGE:
+    elif self.action == Constants.BEAVER_ACTION_PICK_UP_LUMBER:
       self.energy -= Beaver.CONST_ENERGY_PICK_UP_LUMBER_COST
 
     # Set beaver energy state
@@ -371,8 +372,6 @@ class Beaver(pygame.sprite.Sprite):
       self.setstate(Constants.BEAVER_STATE_INDEX_TREE,
         Constants.BEAVER_STATE_SEE_TREE)
       if self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
-        # If beaver is on tree, we assume it eats it for now
-        self.setaction(self.CONST_ACTION_EAT)
         self.setstate(Constants.BEAVER_STATE_INDEX_TREE,
           Constants.BEAVER_STATE_AT_TREE)
 
@@ -402,15 +401,18 @@ class Beaver(pygame.sprite.Sprite):
     self.updateterraintyperesponse()
  
     # No brain movement
+    if self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
+      self.setaction(Constants.BEAVER_ACTION_EAT)
+
     newpos = self.calcnewpos(self.rect)
     self.rect = newpos
     self.updateenergynobrain()
 
     # Brain movement
     # perform action, then update energy
-
     self.brain.setstates(self.states)
     print self.states
+    self.brain.interact()
 
 # TODO: It is actually observed that beavers can eat trees while in marsh
 

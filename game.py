@@ -1,6 +1,7 @@
 import pygame
 from pygame.locals import *
 from beaver import Beaver
+from constants import Constants
 from marsh import Marsh
 from terrain import Terrain
 from tree import Tree
@@ -71,10 +72,10 @@ class Game:
         self.terrain.gettreelist())
       if tree is not None and not isinstance(tree, Marsh):
         # Check beaver state
-        if self.beaver.action == Beaver.CONST_ACTION_EAT:
+        if self.beaver.action == Constants.BEAVER_ACTION_EAT:
           tree.setstate(Tree.CONST_STATE_ATE)
           tree.update()
-        elif self.beaver.action == Beaver.CONST_ACTION_FORAGE:
+        elif self.beaver.action == Constants.BEAVER_ACTION_PICK_UP_LUMBER:
           tree.setstate(Tree.CONST_STATE_FORAGED)
           tree.update()
 
@@ -82,7 +83,8 @@ class Game:
         if tree.health <= 0:
           tree.kill()
           tree = None
-          self.beaver.setaction(Beaver.CONST_ACTION_WALK)
+          # TODO: To be removed when brain is implemented
+          self.beaver.setaction(Constants.BEAVER_ACTION_MOVE_TREE)
 
   def on_render(self):
     self.background.fill(BG_COLOR)
