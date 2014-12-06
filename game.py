@@ -93,7 +93,8 @@ class Game:
         if self.beaver.action == Constants.BEAVER_ACTION_EAT:
           tree.setstate(Constants.TREE_STATE_ATE)
           tree.update()
-        elif self.beaver.action == Constants.BEAVER_ACTION_PICK_UP_LUMBER:
+        elif (self.beaver.action == Constants.BEAVER_ACTION_PICK_UP_LUMBER and
+              self.beaver.pickeduplumber):
           tree.setstate(Constants.TREE_STATE_FORAGED)
           tree.update()
 

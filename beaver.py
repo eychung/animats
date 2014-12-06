@@ -60,6 +60,7 @@ class Beaver(pygame.sprite.Sprite):
     self.energybar = self.rect.width
     self.eyeview = [] # Contains knowledge of nearby sprites by vision
     self.haslumber = False
+    self.pickeduplumber = False
     self.inwater = True # Beaver spawns in marsh
     self.scentview = [] # Contains knowledge of nearby wolf by scent
     self.states = [Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH,
@@ -291,10 +292,12 @@ class Beaver(pygame.sprite.Sprite):
 
   def performactionpickuplumber(self):
     self.setaction(Constants.BEAVER_ACTION_PICK_UP_LUMBER)
+    self.pickeduplumber = False
     if (not self.haslumber and
         self.gettreeview(self.eyeview) and
         self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.haslumber = True
+      self.pickeduplumber = True
       self.setstate(Constants.BEAVER_STATE_INDEX_LUMBER,
         Constants.BEAVER_STATE_HAS_LUMBER)
       self.energy -= CONST_ENERGY_PICK_UP_LUMBER_COST

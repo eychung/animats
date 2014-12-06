@@ -25,10 +25,7 @@ class Marsh(pygame.sprite.Sprite):
 
   def __init__(self):
     self.health = INITIAL_HEALTH
-
-    self.updatemodcounter = 0
     self.redraw()
-
     self.healthbar = self.rect.width * min(1, (self.health/100.0))
 
   def redraw(self):
