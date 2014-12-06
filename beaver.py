@@ -309,6 +309,20 @@ class Beaver(pygame.sprite.Sprite):
       Constants.BEAVER_STATE_NO_LUMBER)
     return self.rect
 
+  def performaction(action):
+    if action == Constants.BEAVER_ACTION_INDEX_MOVE_TREE:
+      self.performactionmovetotree()
+    elif action == Constants.BEAVER_ACTION_INDEX_MOVE_MARSH:
+      self.performactionmovetomarsh()
+    elif action == Constants.BEAVER_ACTION_INDEX_EAT:
+      self.performactioneat()
+    elif action == Constants.BEAVER_ACTION_INDEX_PICK_UP_LUMBER:
+      self.performactionpickuplumber()
+    elif action == Constants.BEAVER_ACTION_INDEX_DROP_LUMBER:
+      self.performactiondroplumber()
+    else:
+      print "Invalid action index"
+
   def updateenergy(self):
     if self.energy == 0:
       self.setstate(Constants.BEAVER_STATE_INDEX_BEAVER_ENERGY,
