@@ -308,7 +308,8 @@ class Beaver(pygame.sprite.Sprite):
       Constants.BEAVER_STATE_NO_LUMBER)
     return self.rect
 
-  def performaction(action):
+  def performaction(self, action):
+    print "performing an action"
     if action == Constants.BEAVER_ACTION_MOVE_TREE:
       self.performactionmovetotree()
     elif action == Constants.BEAVER_ACTION_MOVE_MARSH:
@@ -399,16 +400,14 @@ class Beaver(pygame.sprite.Sprite):
     self.updateterraintyperesponse()
  
     # No brain movement
-    if self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
+    """if self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0:
       self.setaction(Constants.BEAVER_ACTION_EAT)
-
     newpos = self.calcnewpos(self.rect)
     self.rect = newpos
-    self.updateenergynobrain()
+    self.updateenergynobrain()"""
 
     # Brain movement
     # perform action, then update energy
-    print self.states
 
 # TODO: It is actually observed that beavers can eat trees while in marsh
 

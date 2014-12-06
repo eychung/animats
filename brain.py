@@ -25,10 +25,10 @@ class Brain:
     self.environment = BeaverEnv()
 
     # Define the task
-    #self.task = BeaverTask(self.environment)
+    self.task = BeaverTask(self.environment)
 
     # Finally, define experiment
-    #self.experiment = Experiment(self.task, self.agent)
+    self.experiment = Experiment(self.task, self.agent)
 
   def interact(self):
     #self.experiment.doInteractions(1)
