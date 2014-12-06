@@ -10,13 +10,13 @@ break
 has lumber,0.5
 no lumber,0.5
 break
-see tree,0.6
+see tree,0.7
 at tree,1
 none tree,0.3
 break
-see marsh,0.5
-at marsh,0.5
-none marsh,0.2
+see marsh,0.3
+at marsh,0.3
+none marsh,0.1
 break
 see wolf,0.05
 none wolf,0.7

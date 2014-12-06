@@ -16,7 +16,7 @@ class Beaver(pygame.sprite.Sprite):
     scentview, states, stepsize
   """
 
-  CONST_VIEW_DIST = 100
+  CONST_VIEW_DIST = 300
   CONST_SCENT_DIST = 200
   CONST_STEP_SIZE_LAND = 1 # pixels
   CONST_STEP_SIZE_WATER = 4
