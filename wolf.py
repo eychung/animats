@@ -7,7 +7,7 @@ from resources import Resources
 from parameters import WolfParameters
 
 CONST_VIEW_DIST = WolfParameters.CONST_VIEW_DIST
-CONST_SCENT_DIST = WolfParameters.CONST_SCENT_DIST
+CONST_SCENT_DISTS = WolfParameters.CONST_SCENT_DISTS
 CONST_STEP_SIZE = WolfParameters.CONST_STEP_SIZE
 
 class Wolf(pygame.sprite.Sprite):
@@ -74,9 +74,11 @@ class Wolf(pygame.sprite.Sprite):
         self.eyeview.append(sprite)
 
   def setscentview(self, beaver):
-    x = self.rect.centerx - CONST_SCENT_DIST
-    y = self.rect.centery - CONST_SCENT_DIST
-    scentviewrect = Rect(x, y, CONST_SCENT_DIST*2, CONST_SCENT_DIST*2)
+    self.current_scent_dist = random.choice(CONST_SCENT_DISTS)
+    x = self.rect.centerx - self.current_scent_dist
+    y = self.rect.centery - self.current_scent_dist
+    scentviewrect = Rect(x, y,
+                         self.current_scent_dist*2, self.current_scent_dist*2)
     self.scentview = []
     if scentviewrect.colliderect(beaver.rect):
       self.scentview.append(beaver)
@@ -87,7 +89,7 @@ class Wolf(pygame.sprite.Sprite):
     if self.scentview:
       for point in self.adjpoints:
         shortestdist = Resources.calcdistance(point, self.scentview[0].rect.center)
-        normalizeddist = shortestdist/(CONST_SCENT_DIST * math.sqrt(2))
+        normalizeddist = shortestdist/(self.current_scent_dist * math.sqrt(2))
         adjvals.append(1 - normalizeddist)
     return adjvals
 

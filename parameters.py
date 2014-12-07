@@ -55,7 +55,7 @@ class TreeParameters:
 
 class WolfParameters:
   CONST_VIEW_DIST = 100
-  CONST_SCENT_DIST = 200
+  CONST_SCENT_DISTS = (100, 100, 200, 200, 300, 600) # randomly selected every time
   CONST_STEP_SIZE = 2
 
 class StateWeightParameters:
