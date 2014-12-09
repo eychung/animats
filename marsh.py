@@ -24,9 +24,7 @@ class Marsh(pygame.sprite.Sprite):
   """
 
   def __init__(self):
-    self.health = INITIAL_HEALTH
-    self.redraw()
-    self.healthbar = self.rect.width * min(1, (self.health/100.0))
+    self.respawn()
 
   def redraw(self):
     pygame.sprite.Sprite.__init__(self)
@@ -45,6 +43,11 @@ class Marsh(pygame.sprite.Sprite):
     centery = screen.get_height()/2 - newsize[1]/2
     self.rect = self.image.get_rect()
     self.rect.move_ip(centerx, centery)
+
+  def respawn(self):
+    self.health = INITIAL_HEALTH
+    self.redraw()
+    self.healthbar = self.rect.width * min(1, (self.health/100.0))
 
   def gethealth(self):
     return self.health

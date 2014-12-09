@@ -68,16 +68,15 @@ class Game:
     self.wolfsprite.update()
 
     marsh = self.terrain.getmarsh()
-    if marsh is not None:
-      if (self.beaver.action == Constants.BEAVER_ACTION_DROP_LUMBER and
-          self.beaver.droppedlumber and
-          pygame.sprite.collide_rect(self.beaver, marsh)):
-        marsh.improve()
-      marsh.update()
+    if (self.beaver.action == Constants.BEAVER_ACTION_DROP_LUMBER and
+        self.beaver.droppedlumber and
+        pygame.sprite.collide_rect(self.beaver, marsh)):
+      marsh.improve()
+    marsh.update()
 
-      # Reset the wolf if it gets stuck in marsh
-      if pygame.sprite.collide_rect(self.wolf, marsh):
-        self.wolf.respawn()
+    # Reset the wolf if it gets stuck in marsh
+    if pygame.sprite.collide_rect(self.wolf, marsh):
+      self.wolf.respawn()
 
     if (self.beaver.energy <= 0 or
       self.beaver.rect.colliderect(self.wolf.rect)):
@@ -96,6 +95,10 @@ class Game:
       # (aka wolf not lurking around marsh on beaver spawn)
       self.wolf.respawn()
 
+      # Reset the environment so beavers start alike.
+      marsh.respawn()
+      self.terrain.respawntrees()
+
     else:
       tree = pygame.sprite.spritecollideany(self.beaver,
         self.terrain.gettreelist())
@@ -111,15 +114,7 @@ class Game:
 
         # Check tree state
         if tree.health <= 0:
-          tree.respawn()
-          sprites = pygame.sprite.spritecollide(tree, self.terrain.terraingroup,
-                                                False)
-
-          # while it collides with something other than itself
-          while len(sprites) > 1:
-            tree.respawn()
-            sprites = pygame.sprite.spritecollide(
-              tree, self.terrain.terraingroup, False)
+          self.terrain.respawntree(tree)
 
   def on_render(self):
     self.background.fill(BG_COLOR)

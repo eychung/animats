@@ -31,3 +31,18 @@ class Terrain:
     for sprite in self.terraingroup.sprites():
       if isinstance(sprite, Marsh):
         return sprite
+
+  def respawntrees(self):
+    for tree in self.gettreelist():
+      self.respawntree(tree)
+
+  def respawntree(self, tree):
+    tree.respawn()
+    sprites = pygame.sprite.spritecollide(tree, self.terraingroup,
+                                          False)
+
+    # while it collides with something other than itself
+    while len(sprites) > 1:
+      tree.respawn()
+      sprites = pygame.sprite.spritecollide(
+        tree, self.terraingroup, False)
