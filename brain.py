@@ -12,6 +12,7 @@ from parameters import AgentParameters
 INITIAL_ACTION_VALUE_TABLE_VALUE = AgentParameters.INITIAL_ACTION_VALUE_TABLE_VALUE
 ALPHA = AgentParameters.ALPHA
 GAMMA = AgentParameters.GAMMA
+EPSILON = AgentParameters.EPSILON
 
 class Brain:
   def __init__(self):
@@ -24,7 +25,7 @@ class Brain:
 
     # Define Q-learning agent
     learner = Q(ALPHA, GAMMA)
-    #learner._setExplorer(EpsilonGreedyExplorer(0.0))
+    learner._setExplorer(EpsilonGreedyExplorer(EPSILON))
     self.agent = LearningAgent(controller, learner)
 
     # Define the environment

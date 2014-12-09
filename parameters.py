@@ -10,11 +10,12 @@ class GameParameters:
 
   FRAMERATE = 60
 
-  NUM_GENERATIONS = 5
+  NUM_GENERATIONS = 30
 
 class AgentParameters:
   ALPHA = 0.5
   GAMMA = 0.0
+  EPSILON = 0.5
   INITIAL_ACTION_VALUE_TABLE_VALUE = 0.0
 
 class BeaverParameters:
@@ -32,7 +33,7 @@ class BeaverParameters:
   CONST_LOW_ENERGY_THRESHOLD = 30
   CONST_MED_ENERGY_THRESHOLD = 70
 
-  CONST_ENERGY_IDLE_COST = .01
+  CONST_ENERGY_IDLE_COST = .05
   CONST_ENERGY_WALK_LAND_COST = 0.5
   CONST_ENERGY_WALK_WATER_COST = 0.25
   CONST_ENERGY_EAT_GAIN = 0.5
@@ -59,7 +60,8 @@ class TreeParameters:
 
 class WolfParameters:
   CONST_VIEW_DIST = 100
-  CONST_SCENT_DISTS = (100, 100, 200, 200, 300, 600) # randomly selected every time
+  # randomly selected every time
+  CONST_SCENT_DISTS = ([100] * 5) + ([200] * 10) + ([225] * 5)
   CONST_STEP_SIZE = 2
 
 class StateWeightParameters:
