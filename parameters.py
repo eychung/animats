@@ -10,12 +10,12 @@ class GameParameters:
 
   FRAMERATE = 60
 
-  NUM_GENERATIONS = 30
+  NUM_GENERATIONS = 40
 
 class AgentParameters:
-  ALPHA = 0.5
-  GAMMA = 0.0
-  EPSILON = 0.5
+  ALPHA = 0.8
+  GAMMA = 0.4
+  EPSILON = 0.7
   INITIAL_ACTION_VALUE_TABLE_VALUE = 0.0
 
 class BeaverParameters:
@@ -67,14 +67,14 @@ class WolfParameters:
 class StateWeightParameters:
   BEAVER_ENERGY = {
     Constants.BEAVER_STATE_BEAVER_ENERGY_ZERO:  0,
-    Constants.BEAVER_STATE_BEAVER_ENERGY_LOW:   0.3,
-    Constants.BEAVER_STATE_BEAVER_ENERGY_MED:   0.6,
+    Constants.BEAVER_STATE_BEAVER_ENERGY_LOW:   0.2,
+    Constants.BEAVER_STATE_BEAVER_ENERGY_MED:   0.5,
     Constants.BEAVER_STATE_BEAVER_ENERGY_HIGH:  1
   }
 
   MARSH_ENERGY = {
-    Constants.BEAVER_STATE_MARSH_HEALTH_LOW:    0.1,
-    Constants.BEAVER_STATE_MARSH_HEALTH_MED:    0.5,
+    Constants.BEAVER_STATE_MARSH_HEALTH_LOW:    0.3,
+    Constants.BEAVER_STATE_MARSH_HEALTH_MED:    0.6,
     Constants.BEAVER_STATE_MARSH_HEALTH_HIGH:   1
   }
 
@@ -101,9 +101,9 @@ class StateWeightParameters:
   }
 
   ACTION = {
-    Constants.BEAVER_ACTION_MOVE_TREE:          0.9,
-    Constants.BEAVER_ACTION_MOVE_MARSH:         0.5,
+    Constants.BEAVER_ACTION_MOVE_TREE:          0.7,
+    Constants.BEAVER_ACTION_MOVE_MARSH:         0.4,
     Constants.BEAVER_ACTION_EAT:                1.0,
     Constants.BEAVER_ACTION_PICK_UP_LUMBER:     0.5,
-    Constants.BEAVER_ACTION_DROP_LUMBER:        0.5
+    Constants.BEAVER_ACTION_DROP_LUMBER:        0.4
   }

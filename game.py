@@ -65,7 +65,7 @@ class Game:
 
     self.wolf.seteyeview(self.terrain.terraingroup)
     self.wolf.setscentview(self.beaver)
-    self.wolfsprite.update()
+    #self.wolfsprite.update()
 
     marsh = self.terrain.getmarsh()
     if (self.beaver.action == Constants.BEAVER_ACTION_DROP_LUMBER and
@@ -80,13 +80,19 @@ class Game:
 
     if (self.beaver.energy <= 0 or
       self.beaver.rect.colliderect(self.wolf.rect)):
+
+      temp = pygame.time.get_ticks()
+      # Only when beaver starves
+      if self.beaver.energy <= 0:
+        generationtimes.append("%d\t%d" % (self.beaver.generationcount,
+                                           temp - self.generationtime))
+      self.generationtime = temp
+
       self.beaver.respawn()
       self.brain.agent.learn()
       self.brain.agent.reset()
 
-      temp = pygame.time.get_ticks()
-      generationtimes.append(str(temp - self.generationtime))
-      self.generationtime = temp
+
 
       if self.beaver.generationcount > NUM_GENERATIONS:
         self._running = False
