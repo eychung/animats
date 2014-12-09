@@ -18,6 +18,8 @@ SCREEN_HEIGHT = GameParameters.SCREEN_HEIGHT
 
 FRAMERATE = GameParameters.FRAMERATE
 
+NUM_GENERATIONS = GameParameters.NUM_GENERATIONS
+
 class Game:
   def __init__(self):
     self._running = True
@@ -40,6 +42,7 @@ class Game:
 
     self.beaver = Beaver()
     self.beaversprite = pygame.sprite.RenderPlain(self.beaver)
+    self.generationtime = pygame.time.get_ticks()
 
     self.brain = Brain()
     self.brain.environment.setbeaver(self.beaver)
@@ -81,6 +84,13 @@ class Game:
       self.beaver.respawn()
       self.brain.agent.learn()
       self.brain.agent.reset()
+
+      temp = pygame.time.get_ticks()
+      generationtimes.append(str(temp - self.generationtime))
+      self.generationtime = temp
+
+      if self.beaver.generationcount > NUM_GENERATIONS:
+        self._running = False
 
       # Reset the wolf so that it seems as if time has passed
       # (aka wolf not lurking around marsh on beaver spawn)
@@ -149,6 +159,9 @@ class Game:
     self.on_cleanup()
 
 if __name__ == "__main__":
+  generationtimes = []
   game = Game()
   game.on_execute()
-
+  with open('generationtime.txt', 'a') as datafile:
+    datafile.write(','.join(generationtimes))
+    datafile.write('\n')

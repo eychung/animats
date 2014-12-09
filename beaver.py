@@ -17,6 +17,8 @@ CONST_STEP_SIZE_WATER = BeaverParameters.CONST_STEP_SIZE_WATER
 CONST_LUMBER_WEIGHT = BeaverParameters.CONST_LUMBER_WEIGHT
 
 CONST_INITIAL_ENERGY = BeaverParameters.CONST_INITIAL_ENERGY
+CONST_MAX_ENERGY = BeaverParameters.CONST_MAX_ENERGY
+
 CONST_DEAD_ENERGY_THRESHOLD = BeaverParameters.CONST_DEAD_ENERGY_THRESHOLD
 CONST_LOW_ENERGY_THRESHOLD = BeaverParameters.CONST_LOW_ENERGY_THRESHOLD
 CONST_MED_ENERGY_THRESHOLD = BeaverParameters.CONST_MED_ENERGY_THRESHOLD
@@ -39,6 +41,7 @@ class Beaver(pygame.sprite.Sprite):
   # No cost in dropping lumber
 
   def __init__(self):
+    self.generationcount = 1
     self.reset()
 
   def reset(self):
@@ -76,6 +79,7 @@ class Beaver(pygame.sprite.Sprite):
     self.setadjpoints()
 
   def respawn(self):
+    self.generationcount += 1
     self.reset()
 
   def setadjpoints(self):
@@ -287,6 +291,10 @@ class Beaver(pygame.sprite.Sprite):
     if (self.gettreeview(self.eyeview) and
       self.rect.collidelist(self.gettreeview(self.eyeview)) >= 0):
       self.energy += CONST_ENERGY_EAT_GAIN
+
+      if self.energy > CONST_MAX_ENERGY:
+        self.energy = CONST_MAX_ENERGY
+
     else:
       print "performactioneat: not at tree - cannot eat"
       self.energy -= CONST_ENERGY_IDLE_COST
